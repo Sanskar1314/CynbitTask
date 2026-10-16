@@ -1,0 +1,7 @@
+# Tested on Python 3.12. Install in a fresh virtual environment.
+scikit-learn==1.9.1
+numpy==2.3.5
+pandas==2.2.3
+scipy==1.18.1
+streamlit==1.66.0
+pytest==9.1.1
