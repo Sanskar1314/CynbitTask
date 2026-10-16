@@ -1,7 +1,8 @@
-# Tested on Python 3.12. Install in a fresh virtual environment.
-scikit-learn==1.9.1
+# Python 3.12
 numpy==2.3.5
 pandas==2.2.3
 scipy==1.18.1
+scikit-learn==1.9.1
 streamlit==1.66.0
+plotly>=6.0,<7
 pytest==9.1.1

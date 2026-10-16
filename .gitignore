@@ -6,3 +6,6 @@ __pycache__/
 *.joblib
 .artifacts/
 tmp/
+.local/
+*.sqlite
+*.sqlite3
