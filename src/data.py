@@ -114,13 +114,20 @@ def read_reviews(raw: bytes) -> pd.DataFrame:
     # Metadata can also carry contact information.
     for column in ['review_id', 'location', 'text']:
         frame[column] = frame[column].map(redact)
+    if frame.review_id.duplicated().any():
+        raise ValueError('Review IDs collide after contact redaction; use non-personal unique IDs.')
     return frame
 
 
-def safe_csv(frame: pd.DataFrame) -> bytes:
-    """Neutralize spreadsheet formula prefixes on all string cells."""
+def safe_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    """Neutralize formula prefixes while preserving column types and review IDs."""
     def safe(value):
         if isinstance(value, str) and value.lstrip().startswith(('=', '+', '-', '@')):
             return "'" + value
         return value
-    return frame.map(safe).to_csv(index=False).encode('utf-8')
+    return frame.map(safe)
+
+
+def safe_csv(frame: pd.DataFrame) -> bytes:
+    """Export spreadsheet-safe text without changing the original frame."""
+    return safe_frame(frame).to_csv(index=False).encode('utf-8')

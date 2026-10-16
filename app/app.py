@@ -7,13 +7,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import pandas as pd
 import streamlit as st
-from src.data import read_reviews, safe_csv
+from src.data import read_reviews, safe_csv, safe_frame
 from src.model import train_engine
 from src.service import analyze_batch, analyze_review, location_summary
 
 st.set_page_config(page_title='Revio Signal Desk', page_icon='◈', layout='wide')
 st.markdown('''<style>
-.block-container {padding-top:2rem;max-width:1400px}
+.block-container {padding-top:4rem;max-width:1400px}
 [data-testid="stMetric"] {background:white;border:1px solid #e1e7ef;border-radius:12px;padding:16px}
 h1 {letter-spacing:-1.3px} .stCaption {color:#52627a}
 </style>''', unsafe_allow_html=True)
@@ -74,7 +74,7 @@ if page == 'Review inbox':
     filtered = results.copy()
     if location != 'All locations': filtered = filtered[filtered.location == location]
     if priority != 'All priorities': filtered = filtered[filtered.priority == priority]
-    st.dataframe(filtered[['review_id','priority','sentiment','confidence','themes','text','location','reason']],
+    st.dataframe(safe_frame(filtered)[['review_id','priority','sentiment','confidence','themes','text','location','reason']],
                  hide_index=True, width='stretch', column_config={
                      'confidence': st.column_config.ProgressColumn('Model confidence',min_value=0,max_value=1,format='%.2f'),
                      'text': st.column_config.TextColumn('Review',width='large'),

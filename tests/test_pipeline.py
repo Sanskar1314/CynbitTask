@@ -70,3 +70,18 @@ def test_csv_formula_protection():
 def test_schema_row_limit():
     raw = pd.DataFrame({'review_id':range(1001),'text':'good','location':'a','date':'2026-01-01'}).to_csv(index=False).encode()
     with pytest.raises(ValueError): read_reviews(raw)
+
+def test_redacted_id_collision_rejected():
+    raw = b'review_id,text,location,date\na@example.com,good,a,2026-01-01\nb@example.com,bad,a,2026-01-02'
+    with pytest.raises(ValueError, match='collide'):
+        read_reviews(raw)
+
+
+def test_safe_display_preserves_string_ids_and_missing_like_text():
+    from src.data import safe_frame
+    frame = pd.DataFrame({'review_id': ['001', '002'], 'text': ['NA', '=SUM(A1)'], 'confidence': [.6, .7]})
+    safe = safe_frame(frame)
+    assert safe.review_id.tolist() == ['001', '002']
+    assert safe.text.tolist() == ['NA', "'=SUM(A1)"]
+    assert safe.confidence.tolist() == [.6, .7]
+    assert frame.text.iloc[1] == '=SUM(A1)'
