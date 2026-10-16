@@ -1,0 +1,12 @@
+flowchart TD
+  N0["Text or UTF-8 CSV"]
+  N1["Schema and content validation"]
+  N0 --> N1
+  N2["Partial contact redaction"]
+  N1 --> N2
+  N3["Sentiment model plus policy rules"]
+  N2 --> N3
+  N4["Human inspects evidence"]
+  N3 --> N4
+  N5["Filtered, formula-safe CSV"]
+  N4 --> N5

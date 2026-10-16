@@ -1,0 +1,12 @@
+flowchart TD
+  N0["Python 3.12 virtual environment"]
+  N1["Pinned app dependencies"]
+  N0 --> N1
+  N2["Bundled public corpus and code"]
+  N1 --> N2
+  N3["Local Streamlit on 127.0.0.1:8501"]
+  N2 --> N3
+  N4["Browser session and cached model"]
+  N3 --> N4
+  N5["No production API or database"]
+  N4 --> N5

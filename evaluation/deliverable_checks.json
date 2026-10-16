@@ -1,0 +1,26 @@
+{
+  "pdf_checks": {
+    "AI_Opportunity_Report": {
+      "pages": 9,
+      "headings_checked": 28,
+      "missing_headings": [],
+      "extracted_characters": 20180,
+      "blank_pages": []
+    },
+    "Technical_Approach_Report": {
+      "pages": 8,
+      "headings_checked": 29,
+      "missing_headings": [],
+      "extracted_characters": 15273,
+      "blank_pages": []
+    },
+    "Complete_Project_Explanation": {
+      "pages": 23,
+      "headings_checked": 93,
+      "missing_headings": [],
+      "extracted_characters": 49264,
+      "blank_pages": []
+    }
+  },
+  "broken_links_or_missing_headings": []
+}

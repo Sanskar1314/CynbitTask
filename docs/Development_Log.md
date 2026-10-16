@@ -22,3 +22,6 @@ Timestamps use Asia/Kolkata. Each subsequent milestone records the preceding com
 
 - Reliability correction `afaede9` pushed and remote SHA verified on 2026-10-17.
 - 2026-10-17: completed company-specific opportunity/technical reports, nine detailed engineering decisions, full walkthrough, model card, 30 interview questions and demo guide. Added exact run instructions, optional untested Docker recipe, data checksum verifier and recovery/acceptance records. Fresh isolated environment: 26 tests passed. Commit: `docs: complete assessment reports and interview preparation`.
+
+- Documentation milestone `2e58be7` pushed and remote SHA verified on 2026-10-17.
+- 2026-10-17: packaged three generated PDFs (9/8/23 pages), eight diagram source/image pairs and an actual application screenshot. Visual contact-sheet review completed; automated checks found all 150 source headings, no blank pages and no broken local document links. Added reproducible PDF builder and verification script. Commit: `docs: package verified PDFs diagrams and application evidence`.
