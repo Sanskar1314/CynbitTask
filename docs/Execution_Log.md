@@ -17,3 +17,9 @@
 - Redacted-ID collisions rejected; formula-like strings sanitized in both display and export.
 - Clean isolated environment previously installed successfully and passed 25 tests; rerunning the final added test suite there before completion.
 - No model change or test-driven tuning. Existing measured metrics remain unchanged.
+
+- Final isolated-environment run: 26 passed. Public source hashes match. All 150 PDF headings found; no blank pages or broken local links.
+- Artifact package ead0907 pushed and remote SHA verified. Generated PDFs marked binary in .gitattributes so Git treats PDF serialization correctly.
+- Local server restarted on 2026-10-17; /_stcore/health returned ok.
+- Credential-pattern scan of tracked textual project files found no matches; .env and virtual environments are not tracked. Existing .DS_Store modification remains untouched.
+- Required assessment deliverables complete. No external submission, recruiter communication, visibility change or public application deployment performed.

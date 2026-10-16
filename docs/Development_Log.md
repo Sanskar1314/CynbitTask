@@ -25,3 +25,22 @@ Timestamps use Asia/Kolkata. Each subsequent milestone records the preceding com
 
 - Documentation milestone `2e58be7` pushed and remote SHA verified on 2026-10-17.
 - 2026-10-17: packaged three generated PDFs (9/8/23 pages), eight diagram source/image pairs and an actual application screenshot. Visual contact-sheet review completed; automated checks found all 150 source headings, no blank pages and no broken local document links. Added reproducible PDF builder and verification script. Commit: `docs: package verified PDFs diagrams and application evidence`.
+
+- Artifact milestone `ead0907d4c709739930612adab0c2fba1374e742` pushed and remote main verified on 2026-10-17.
+- Final completion record: source hashes, document links, PDF heading coverage, 26-test primary/clean-environment runs and local HTTP health verified. No credential-pattern matches in tracked textual project files. Commit: `chore: finalize verified assessment recovery records`. This entry records the previous verified push to avoid a self-referential commit loop.
+
+## Verified milestone history before the final log commit
+
+Every listed commit was pushed and is included in verified remote main at ead0907. Timestamps below are Git author timestamps with their explicit offset.
+
+| Timestamp | Commit | Message | Files changed | Push |
+|---|---|---|---:|---|
+| 2026-10-16T20:19:43+05:30 | 3b7588a | chore: initialize resumable assessment workspace | 6 | Verified |
+| 2026-10-16T20:22:37+05:30 | 6ac1fd5 | docs: verify Cynbit and select explainable Revio triage | 5 | Verified |
+| 2026-10-16T20:24:18+05:30 | 4aa48c5 | feat: add attributed benchmark and validated review ingestion | 12 | Verified |
+| 2026-10-16T20:25:59+05:30 | 23d8b4a | fix: preserve multiline and punctuation benchmark records | 2 | Verified |
+| 2026-10-16T20:28:34+05:30 | d2a6354 | feat: implement and evaluate explainable sentiment triage | 12 | Verified |
+| 2026-10-16T20:28:40+05:30 | 9782012 | feat: build interactive Revio review workbench | 4 | Verified |
+| 2026-10-17T00:27:35+05:30 | afaede9 | fix: preserve review identity in safe display and exports | 7 | Verified |
+| 2026-10-17T00:27:57+05:30 | 2e58be7 | docs: complete assessment reports and interview preparation | 19 | Verified |
+| 2026-10-17T00:28:23+05:30 | ead0907 | docs: package verified PDFs diagrams and application evidence | 26 | Verified |
