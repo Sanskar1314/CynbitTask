@@ -1,0 +1,11 @@
+# Dataset and upload contract
+
+All sample records are synthetic, generated with seed 42 by `scripts/generate_data.py`; none are Cynbit, Revio or real customer data. Twelve stocked SKUs have 1,020 days of sales, 2024-01-01 through 2026-10-16; a thirteenth has no history. Quantity sold is capped by availability. Latent simulated demand is audit-only and never a predictor. Supply interruptions produce censored observations. The daily ledger includes receipts and writeoffs; current batch quantities equal the final closing quantities. It is a teaching simulation, not a faithful calibrated retailer.
+
+The event calendar is an explicitly fictional, user-maintained scenario. Repeated illustrative dates are not verified Indian religious festival dates. Replace every date and region with a verified local calendar before real use. Future event features assume dates are known at forecast time.
+
+Six CSVs form one atomic snapshot. `src/data.py:SCHEMAS` defines required headers. Sample CSVs are templates. Dates use YYYY-MM-DD; only batch manufacturing and expiry dates may be blank. Prices and quantities are finite, nonnegative; keys unique; references must exist. Reviews may omit product_id. Order statuses: confirmed, draft, received, cancelled. Optional sales availability and stockout columns enable censoring; absent availability means demand is unverified observed sales. Missing dates remain unknown. Snapshot date is latest sales date, not today's date.
+
+`shelf_life_days` means assumed remaining shelf life of a **new receipt**, not a manufacturer's official expiry. Existing batch dates are authoritative recorded inputs. Unknown or expired batches require review and are excluded from saleable stock. Max stock is unit capacity, not monetary budget. Pack size/MOQ apply to units. Revenue uses historical sale price, not current catalog price. Historical weekly/monthly demand values are 7/30-day equivalents of the latest 28-day observed mean, not calendar-period totals.
+
+Limits: 10 MB per CSV, 100 products, 100,000 rows per table, 2,000 days of history; lead time at most 30 days. These bound a local demonstration, not a production service. SQLite is local explicit persistence, without multiuser access control. Never upload private customer data to a publicly hosted instance.

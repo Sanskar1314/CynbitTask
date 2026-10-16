@@ -1,0 +1,14 @@
+product_id,product_name,category,selling_price,cost_price,supplier_id,lead_time_days,minimum_order_quantity,pack_size,shelf_life_days,max_stock,backorders,aliases
+P01,Cola 500ml,Beverages,40,28,SUP-Beverages,4,12,6,120,1500,0,cola|cold drink|soft drink
+P02,Bottled Water 1L,Beverages,20,12,SUP-Beverages,3,12,12,180,1500,0,bottled water 1l
+P03,Mango Drink,Beverages,35,24,SUP-Beverages,5,12,6,90,1500,0,mango drink|mango drinks
+P04,Milk 500ml,Dairy,30,25,SUP-Dairy,1,10,5,3,1500,0,milk 500ml
+P05,Yogurt 100g,Dairy,25,18,SUP-Dairy,2,12,6,7,1500,0,yogurt 100g
+P06,Masala Chips,Snacks,20,14,SUP-Snacks,4,12,6,60,1500,0,masala chips
+P07,Tea 250g,Pantry,120,90,SUP-Pantry,7,6,3,180,1500,0,tea 250g
+P08,Coffee 100g,Pantry,150,112,SUP-Pantry,7,6,3,180,1500,0,coffee 100g
+P09,Plain Biscuits,Snacks,30,20,SUP-Snacks,5,12,6,90,1500,0,plain biscuits
+P10,Chocolate Box,Gifting,180,130,SUP-Gifting,10,6,3,90,1500,0,chocolate box
+P11,Packaged Sweets,Gifting,250,180,SUP-Gifting,5,6,3,15,1500,0,packaged sweets
+P12,Rice 1kg,Essentials,65,48,SUP-Essentials,12,10,5,180,1500,0,rice 1kg
+P13,Sugar-free Cola,Beverages,45,32,SUP-Beverages,5,12,6,90,1500,0,sugar-free cold drink|sugar-free cold drinks|sugar free cola|sugar-free cola

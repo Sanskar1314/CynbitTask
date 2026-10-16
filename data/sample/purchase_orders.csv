@@ -1,0 +1,4 @@
+purchase_order_id,product_id,quantity_ordered,order_date,expected_delivery_date,status
+PO01,P01,24,2026-10-14,2026-10-19,confirmed
+PO02,P12,30,2026-10-10,2026-11-12,confirmed
+PO03,P03,12,2026-10-12,2026-10-20,draft

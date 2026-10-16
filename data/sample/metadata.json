@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "seed": 42,
+  "as_of": "2026-10-16",
+  "calendar": "Illustrative scenario dates, not verified festival dates",
+  "rows": {
+    "products": 13,
+    "sales": 12240,
+    "batches": 24,
+    "purchase_orders": 3,
+    "reviews": 14,
+    "festivals": 28
+  }
+}
