@@ -5,3 +5,5 @@ Base: 14df7c7b28cdee253171e5a78c663656bab5d557 (previous prototype). Date/time z
 2026-10-17: Safe replacement baseline, prior history preserved. Commit: chore: replace previous prototype with StockSense foundation. Push verified in subsequent milestone entry.
 
 2026-10-17: Foundation 1d3734e2cc452dc581a33a74e373a799c818b187 pushed to origin/main and remote verified. Data milestone adds reproducible synthetic tables, atomic validation, censor-aware summaries and SQLite. Seven tests passed. No real customer data.
+
+2026-10-17: Data milestone a37bb66c3ceb85543348acfc3ee44ffad4b3321b pushed and remote verified. Core engines implemented and evaluated: 16 tests passed. Three validation origins select boosting; held-out observed MAE 2.975 versus moving-average 3.599. See evaluation/metrics.json. No production accuracy claim.
