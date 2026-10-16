@@ -45,14 +45,23 @@ def load_benchmark() -> tuple[pd.DataFrame, dict]:
         path = ROOT / 'data/raw' / f'{name}_labelled.txt'
         if not path.exists():
             raise FileNotFoundError('Dataset missing. Run python scripts/download_data.py.')
+        pending = []
         for line_number, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
-            text, label = line.rsplit('\t', 1)
+            pending.append(line)
+            if '\t' not in line:
+                continue
+            text, label = ' '.join(pending).rsplit('\t', 1)
+            pending = []
             if label not in {'0', '1'}:
                 raise ValueError(f'Invalid benchmark label: {path.name}:{line_number}')
-            clean = normalize(validate_text(text))
+            clean = normalize(text)
+            if not clean:
+                raise ValueError(f'Empty benchmark text: {path.name}:{line_number}')
             rows.append({'id': f'{source}-{line_number}', 'text': clean,
                          'label': int(label), 'source': source,
                          'text_hash': hashlib.sha256(clean.encode()).hexdigest()})
+        if pending:
+            raise ValueError(f'Unterminated benchmark record in {path.name}')
     frame = pd.DataFrame(rows)
     raw_count = len(frame)
     conflicts = frame.groupby('text_hash').label.nunique()
