@@ -14,3 +14,5 @@ Timestamps use Asia/Kolkata. Each subsequent milestone records the preceding com
 
 - Dataset commit `4aa48c5` and parser fix `23d8b4a` pushed. Parser smoke test now passes (3000 raw / 2979 unique).
 - 2026-10-16: model, explainable routing, fixed splits, baselines and domain-shift evaluation implemented. 23 core tests passed. Test macro-F1 0.791944; Naive Bayes 0.803691; accepted accuracy 0.825188 misses validation target. No test-driven threshold retuning. Commit: `feat: implement and evaluate explainable sentiment triage`.
+
+- 2026-10-16: Streamlit inbox, single-review inspector, evidence view, upload validation, filters and safe CSV export implemented. Full suite: 24 passed, including Streamlit navigation and invalid-input handling. Commit: `feat: build interactive Revio review workbench`.
