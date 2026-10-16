@@ -19,3 +19,6 @@ Timestamps use Asia/Kolkata. Each subsequent milestone records the preceding com
 
 - Model/evaluation commit `d2a6354` and UI commit `9782012` were pushed and remote main verified on 2026-10-16.
 - 2026-10-17: resumed final review. Fixed display/export sanitization without coercing string IDs, added redacted-ID collision protection and corrected top spacing. Core plus Streamlit suite: 26 passed. Files: src/data.py, app/app.py, tests/test_pipeline.py, evaluation test evidence. Commit: `fix: preserve review identity in safe display and exports`.
+
+- Reliability correction `afaede9` pushed and remote SHA verified on 2026-10-17.
+- 2026-10-17: completed company-specific opportunity/technical reports, nine detailed engineering decisions, full walkthrough, model card, 30 interview questions and demo guide. Added exact run instructions, optional untested Docker recipe, data checksum verifier and recovery/acceptance records. Fresh isolated environment: 26 tests passed. Commit: `docs: complete assessment reports and interview preparation`.
