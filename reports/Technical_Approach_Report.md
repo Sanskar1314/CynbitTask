@@ -16,7 +16,7 @@ Six CSV tables -> atomic validation -> snapshot
   sales + calendar -> causal features -> baseline/ML comparison -> forecasts
   batches + orders + forecasts -> daily FEFO -> constrained purchasing review
   reviews + aliases -> qualitative intent/evidence -> investigation queue
-  all outputs -> eight-section Streamlit dashboard -> CSV exports
+  all outputs -> seven-section Streamlit dashboard -> CSV exports
   explicit save/load <-> local SQLite
 ```
 
@@ -24,7 +24,7 @@ Reviews intentionally bypass numerical forecasting. There is no training label t
 
 ## Technology choices
 
-Python 3.12, pandas/NumPy for tables and arrays, scikit-learn HistGradientBoostingRegressor for demand, Streamlit and Plotly for the interface, SQLite from the standard library for persistence, pytest for checks and ReportLab for PDFs. Versions are pinned in requirements files. No deep learning framework is needed for this small tabular dataset. No prompt engineering is involved because no language model is called.
+Python 3.12, pandas/NumPy for tables and arrays, scikit-learn PoissonRegressor and HistGradientBoostingRegressor for demand, Streamlit and Plotly for the interface, SQLite from the standard library for persistence, pytest for checks and ReportLab for PDFs. Versions are pinned in requirements files. No deep learning framework is needed for this small tabular dataset. No prompt engineering is involved because no language model is called.
 
 ## Dataset design and validation
 
@@ -32,7 +32,7 @@ Seed42 generates 12,240 daily sales rows covering 1,020 days, twelve stocked SKU
 
 Six linked tables are validated together. Required columns, numeric finiteness/nonnegativity, dates, unique keys, product references, stock balance and order chronology are checked. Missing manufacturing/expiry is allowed but represented as unknown. Duplicate sale dates per SKU are rejected rather than aggregated silently. Availability fields are optional; absent fields prevent reliable lost-demand identification. See docs/Data_Card.md and src/data.py for the full schema.
 
-The simulation stores latent demand only for a separate evaluation diagnostic. It never enters model features. The calendar is user-maintained demonstration data and deliberately not a verified religious calendar. Replacing it with actual regional dates is a precondition for real use.
+The simulation stores latent demand only for a separate evaluation diagnostic. It never enters model features. The public Google Holidays in India calendar supplies 28 selected dates for 2024–2027, imported on 17 October 2026. Synthetic event effects were regenerated to match these dates; uploaded sales are never rewritten. This snapshot is not continuous OAuth synchronization. Regional variation and tentative dates remain relevant.
 
 ## Censoring and historical analysis
 
@@ -40,13 +40,19 @@ The simulation stores latent demand only for a separate evaluation diagnostic. I
 
 Historical summaries retain recorded total units/revenue, recent 28-day observed mean, 7/30-day equivalents, previous-window growth and standard deviation. Zero-heavy history is marked intermittent; recent mean >=15 is fast moving and <3 slow moving. These thresholds are transparent demo heuristics, not learned business categories.
 
-## Feature engineering
+## Selected seasonal model
+
+One Poisson regression per product jointly learns trend, two annual sine/cosine harmonics, weekday indicators and separate festival preparation-window indicators (seven days before through event day). StandardScaler and PoissonRegressor(alpha=.03, max_iter=500) yield nonnegative expected counts through a log link [3]. Smooth annual terms avoid month-boundary steps [4]. Seasonal labels in reporting are broad display groups, not weather forecasts. There is no separate seasonal prediction or universal festival multiplier.
+
+Training uses only uncensored observations before the cutoff. At least 180 observed days spanning 365 days are required; otherwise the model explicitly falls back to the 28-day average. No-history products remain unsupported. The model can miss sudden changes, promotions or regional differences; two or three annual cycles do not establish real-world reliability.
+
+## Legacy comparator feature engineering
 
 For each SKU and forecast origin, construct lag1, lag7, mean7/28/84, std28, mean28-minus-mean84 trend and missing fraction over28 days. Add categorical product identity, horizon1–30, target weekday, sine/cosine of target month and whether an event is within the next seven days. Month encoding wraps December into January smoothly. Calendar dates are assumed known at the origin.
 
 Historical target-day sales, future availability and latent simulated demand are excluded. Category is not separately encoded: product identity and history carry this small closed catalog. Future promotions are not supplied, so their effect remains an omitted driver. New SKUs cannot inherit a precise forecast from identity alone.
 
-## Algorithms and training
+## Comparator algorithms and training
 
 Moving average repeats the last28-day observed mean. Weekly seasonal naive repeats the last seven calendar positions, filling missing positions with the past28-day mean. These are meaningful simple comparators.
 
@@ -58,21 +64,22 @@ Forecast eligibility requires at least14 observed historical days and seven obse
 
 ## Chronological evaluation protocol
 
-Three expanding-window validation origins are 2026-06-18, 2026-07-18 and 2026-08-17, each forecasting the next30 days. Select the method with lowest pooled validation MAE. Freeze that choice before evaluating the next30 days from 2026-09-17 through2026-10-16. Production forecasts refit the selected ML approach through the final snapshot date. Random train/test splits are inappropriate because they leak temporal information; rolling origins follow established forecasting practice [1].
+Four chronological validation windows select Seasonal Poisson regression by pooled MAE. Twelve subsequent disjoint 30-day rolling test windows cover 360 days. Each origin trains only on earlier data; the model choice stays frozen. Results are synthetic uncensored observations, not merchant performance.
 
-MAE = mean absolute error; RMSE = square root of mean squared error; WAPE = sum absolute error / sum absolute actual demand; bias = mean(prediction - actual). WAPE is undefined when actual total is zero. Metrics use product-days with both observed uncensored actuals and supported predictions. Seven censored days are excluded from the final360 stocked-product days; the new product has no evaluable target.
+| Method | Validation MAE | Test MAE | Test RMSE | Test WAPE | Test bias |
+|---|---:|---:|---:|---:|---:|
+| Seasonal Poisson regression | 3.088 | 2.884 | 3.958 | 18.673% | -0.052 |
+| HistGradientBoosting | 3.117 | 2.990 | 4.105 | 19.353% | -0.284 |
+| Moving average 28d | 3.439 | 3.389 | 4.750 | 21.938% | -0.047 |
+| Weekly seasonal naive | 4.213 | 4.240 | 5.852 | 27.446% | -0.236 |
 
-| Method | Validation MAE, 30d | Test MAE, 30d | Test RMSE | Test WAPE | Test bias |
-|---|---|---|---|---|---|
-| HistGradientBoosting | 3.101 | 2.975 | 4.064 | 22.248% | -0.163 |
-| Moving average28d | 3.639 | 3.599 | 4.856 | 26.909% | +0.516 |
-| Weekly seasonal naive | 4.435 | 4.094 | 5.456 | 30.613% | -0.181 |
+Test count: 4,201 observed product-days. The selected model reduces MAE by 3.5% versus boosting and 14.9% versus the average on the same revised data. All four broad seasonal groups improve; this does not imply every SKU improves. Separate latent simulation diagnostic: n4,320, MAE2.925. WAPE is not classification accuracy. Old v1 results use different data and a shorter protocol and are archived in evaluation/archive/v1; they are not a direct before/after comparison.
 
-Selected-model test MAE at7/14/30 days is2.999/2.799/2.975, based on83/165/353 observed product-days. Separate latent-demand simulation evaluation includes360 days: selected-model MAE2.979 and WAPE22.424%. Real shops do not supply this latent ground truth. These results establish reproducibility on the generator, not external validity or financial savings. `evaluation/metrics.json` and `backtest_predictions.csv` contain unrounded evidence.
+MAE measures average absolute error; RMSE emphasizes larger errors; bias is prediction minus actual. Shorter uploaded histories use a restricted protocol and cannot establish full-year accuracy. The calendar was imported retrospectively, not from a historical point-in-time feed.
 
 ## Seasonal and festival logic
 
-The model learns calendar associations, rather than applying a universal drinks-in-summer rule. The seasonal chart aggregates observed daily units by month across years. The event evidence table compares seven pre-event days with the preceding28-day baseline. It requires at least five observed event days,20 baseline days and two comparable occurrences. Overlapping events, promotions and trends confound this descriptive comparison. It never adds an extra uplift to model output. Missing sufficient evidence is reported explicitly.
+The selected model learns product-specific season and event associations jointly. Forecasting contains one prediction chart with calendar markers; historical monthly/event evidence is expandable on the same page. The seasonal chart aggregates observed daily units by month across years. The event evidence table compares seven pre-event days with the preceding28-day baseline. It requires at least five observed event days,20 baseline days and two comparable occurrences. Overlapping events, promotions and trends confound this descriptive comparison. It never adds an extra uplift to model output. Missing sufficient evidence is reported explicitly.
 
 ## Reorder mathematics and safety policy
 
@@ -102,24 +109,28 @@ Aliases are matched longest first with nonoverlapping spans, so sugar-free cola 
 
 ## UI, persistence and privacy
 
-Streamlit offers eight sections and caches computation by snapshot content. Demo metrics apply only to the demo; uploaded/local-loaded snapshots start with the baseline until their own evaluation is run. All six uploads replace state only after validation succeeds. Review-only replacement also validates the related snapshot. SQLite save/load is explicit and uses fixed table names and atomic file replacement. Formula-leading strings are escaped in supplied CSV export buttons.
+Streamlit offers seven sections and caches computation by snapshot content. Demo metrics apply only to the demo; uploaded/local-loaded snapshots start with the baseline until their own evaluation is run. All six uploads replace state only after validation succeeds. Review-only replacement also validates the related snapshot. SQLite save/load is explicit and uses fixed table names and atomic file replacement. Formula-leading strings are escaped in supplied CSV export buttons.
 
 Data stays in the local process and optional `.local/snapshot.sqlite`; it is not sent to a model API. The application has no authentication and should bind to127.0.0.1. Production requires tenant isolation, encryption, access control, retention/deletion policy, audit logs and secure connectors. Streamlit's built-in grid exports are not the application-controlled safe CSV export path; use the named download buttons for untrusted text. No secrets belong in Git.
 
 ## Verification and deployment plan
 
-Executed pytest unit/integration tests cover schema failures, stock ledger, SQLite roundtrip,150-unit reorder,50-unit expiry example, FEFO allocation, unknown/expired exclusion, receipt timing, causal feature invariance, no-history forecasts, overstock, horizon suppression, festivals, review negation and eight-section UI navigation. Actual browser inspection checks chart rendering after restarting the old server to clear stale modules.
+Executed pytest unit/integration tests cover schema failures, stock ledger, SQLite roundtrip,150-unit reorder,50-unit expiry example, FEFO allocation, unknown/expired exclusion, receipt timing, causal feature invariance, no-history forecasts, overstock, horizon suppression, festivals, review negation and seven-section UI navigation. Actual browser inspection checks chart rendering after restarting the old server to clear stale modules.
 
 Run locally with Python3.12 and requirements.txt. The first forecast fit is cached per snapshot. The prototype bounds100 products,100,000 rows/table and2,000 history days; no load-test SLA is claimed. A real deployment should move training to scheduled jobs, version datasets/models, separate tenant data, monitor drift and prediction coverage, and keep human purchasing approval.
 
 ## Limitations and next experiments
 
-Synthetic single-store data, pooled model selection, uncensored selection bias, uncertain incoming life, simplified lost-sales/backorder treatment, fictional calendar and English-only rules limit generalization. Training targets overlap across historical origins; this is direct forecasting training, while chronological validation windows remain disjoint. No calibrated uncertainty interval, service-level guarantee, validated ROI or real integration is implemented.
+Synthetic single-store data, pooled model selection, uncensored selection bias, uncertain incoming life, simplified lost-sales/backorder treatment, retrospectively imported public calendar and English-only rules limit generalization. Training targets overlap across historical origins; this is direct forecasting training, while chronological validation windows remain disjoint. No calibrated uncertainty interval, service-level guarantee, validated ROI or real integration is implemented.
 
 Next: consented real data, per-SKU residual analysis, robust censor-aware demand models, intermittent-demand comparators, promotion schedules, supplier uncertainty, policy-cost simulation and controlled pilots. Confirm original assessment timezone independently; no official timezone evidence was available.
 
 ## References
 
 [1] Hyndman and Athanasopoulos, Forecasting: Principles and Practice, forecasting toolbox and time-series cross-validation, https://otexts.com/fpp3/toolbox.html (accessed2026-10-17).
+
+[3] scikit-learn PoissonRegressor API, https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.PoissonRegressor.html (accessed2026-10-17).
+
+[4] Hyndman and Athanasopoulos, dynamic regression and harmonic terms, https://otexts.com/fpp3/dynamic-regression.html (accessed2026-10-17).
 
 [2] scikit-learn HistGradientBoostingRegressor API, https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html (implementation reference; installed version is pinned).

@@ -1,0 +1,235 @@
+{
+  "calendar_name": "Holidays in India",
+  "calendar_id": "en.indian#holiday@group.v.calendar.google.com",
+  "retrieved_on": "2026-10-17",
+  "range_start": "2024-01-01",
+  "range_end_exclusive": "2028-01-01",
+  "timezone": "Asia/Kolkata",
+  "scope": "Public holiday entries only; no personal calendar records",
+  "events": [
+    {
+      "summary": "Holi",
+      "start": "2024-03-25T00:00:00",
+      "end": "2024-03-26T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNDAzMjVfbzVhc3AzODMzbDZlcHBobm9vYTVlZzQ4NXMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Ramzan Id",
+      "start": "2024-04-11T00:00:00",
+      "end": "2024-04-12T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNDA0MTFfcHB2amgzMnQ0ZGlpdHVvY2FrOGNuYWFoY3MgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Raksha Bandhan",
+      "start": "2024-08-19T00:00:00",
+      "end": "2024-08-20T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNDA4MTlfZWF2c2Yycm1qc2hyZXRoYXM4NGRxdnBydGMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "First Day of Sharad Navratri",
+      "start": "2024-10-03T00:00:00",
+      "end": "2024-10-04T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNDEwMDNfbDYwOXQ2MXA2NGlxN3B2MTlpYmhycWQzZDggZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Dussehra",
+      "start": "2024-10-12T00:00:00",
+      "end": "2024-10-13T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNDEwMTJfaWQ1NDBtdjc0dWxkZWZrZmdqbnE5YnU5YTAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Diwali/Deepavali",
+      "start": "2024-10-31T00:00:00",
+      "end": "2024-11-01T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNDEwMzFfazU1N3J1Y3BvdjdxNDRraTlua2d1aWthaHMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Christmas",
+      "start": "2024-12-25T00:00:00",
+      "end": "2024-12-26T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNDEyMjVfYm8wMmJxMTM2N21ldWJjNjluOWs5aGY3ZjAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Holi",
+      "start": "2025-03-14T00:00:00",
+      "end": "2025-03-15T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNTAzMTRfcG5yaGRqaDdyMHJhNWI0bG9zbjU3bGdpcXMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Ramzan Id",
+      "start": "2025-03-31T00:00:00",
+      "end": "2025-04-01T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNTAzMzFfZWlucnNpajQxZjdxb2tocTZjYWcwMGtiNnMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Raksha Bandhan",
+      "start": "2025-08-09T00:00:00",
+      "end": "2025-08-10T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNTA4MDlfdGxrYWg3cW80OHYxbXZ2MjlpbW5sNGNpamMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "First Day of Sharad Navratri",
+      "start": "2025-09-22T00:00:00",
+      "end": "2025-09-23T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNTA5MjJfcXVmc3A0YmEycm5tcmR2YjdqcWNlZmdhOWMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Dussehra",
+      "start": "2025-10-02T00:00:00",
+      "end": "2025-10-03T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNTEwMDJfaXB2bWdpNGQ0dTRjbTgyOW4yMDh0MmhoZTggZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Diwali/Deepavali",
+      "start": "2025-10-20T00:00:00",
+      "end": "2025-10-21T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNTEwMjBfbTIyNTNidmVya3BxZW9wcTNjbmgzYmhiMTggZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Christmas",
+      "start": "2025-12-25T00:00:00",
+      "end": "2025-12-26T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNTEyMjVfOWZoMzJsaGxhbjg1bGs5MzEzMmM4bjNtdDAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Holi",
+      "start": "2026-03-04T00:00:00",
+      "end": "2026-03-05T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNjAzMDRfYmZ1NTh1aWRjMnJpcjdjdGJ0Ym9rcXE2YWsgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Ramzan Id",
+      "start": "2026-03-21T00:00:00",
+      "end": "2026-03-22T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNjAzMjFfdDVjdjVtZG5nNGJkMGJ0YnNmN2ZpZTZoODAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Raksha Bandhan",
+      "start": "2026-08-28T00:00:00",
+      "end": "2026-08-29T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNjA4MjhfZmJxODFnaXY5dGlqNzMwZjVmbHI1aHB1YWMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "First Day of Sharad Navratri",
+      "start": "2026-10-11T00:00:00",
+      "end": "2026-10-12T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNjEwMTFfMWljaW9sbjE0Mmp1ZGxrY2ZiaGEzcGpkcGcgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Dussehra",
+      "start": "2026-10-20T00:00:00",
+      "end": "2026-10-21T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNjEwMjBfZmpwMHJiOW8zbjJyZTBvYTg5cXU0ZjRtc28gZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Diwali/Deepavali",
+      "start": "2026-11-08T00:00:00",
+      "end": "2026-11-09T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNjExMDhfbzNhZXZ2aXYxMDVzYWViZjQ3cHRjZGExNG8gZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Christmas",
+      "start": "2026-12-25T00:00:00",
+      "end": "2026-12-26T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNjEyMjVfajd0ODRnZjQzN3Z0dWU0Y2s3NWh2ZDU2bDAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Ramzan Id (tentative)",
+      "start": "2027-03-10T00:00:00",
+      "end": "2027-03-11T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNzAzMTBfMmg4OTl2aDNoOGhkb3R2NWdlYThnZXJrc2sgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Holi",
+      "start": "2027-03-22T00:00:00",
+      "end": "2027-03-23T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNzAzMjJfa2V1MzJzcXBtMGFrMmQ4MmJvNmdycWUzcGMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Raksha Bandhan",
+      "start": "2027-08-17T00:00:00",
+      "end": "2027-08-18T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNzA4MTdfMHRudXBnZTZkMDM1OGFpODdhYjBydGtxaHMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "First Day of Sharad Navratri",
+      "start": "2027-09-30T00:00:00",
+      "end": "2027-10-01T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNzA5MzBfNWpkNDk0bHI4bGVhaThhOWN1ZWc1b2pqdmMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Dussehra",
+      "start": "2027-10-09T00:00:00",
+      "end": "2027-10-10T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNzEwMDlfNGphY2w3aW02a2x0cDhhYjE5YmFlZXEyOTAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Diwali/Deepavali",
+      "start": "2027-10-29T00:00:00",
+      "end": "2027-10-30T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNzEwMjlfbWl2NmxqcWxkOTBmYjRlYjI2djJzaDhjYjQgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    },
+    {
+      "summary": "Christmas",
+      "start": "2027-12-25T00:00:00",
+      "end": "2027-12-26T00:00:00",
+      "status": "confirmed",
+      "visibility": "public",
+      "url": "https://www.google.com/calendar/event?eid=MjAyNzEyMjVfMHJrNTVxZGVhMzljaDAyNnE1Y2dqb3NmOW8gZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles"
+    }
+  ]
+}

@@ -1,6 +1,9 @@
 """Reproducible fictional kirana store, not Cynbit/customer data."""
 from pathlib import Path
 import json
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from src.calendar_data import load_holiday_snapshot
 import numpy as np
 import pandas as pd
 
@@ -29,12 +32,10 @@ def generate():
           supplier_id='SUP-'+cat,lead_time_days=lead,minimum_order_quantity=moq,pack_size=pack,
           shelf_life_days=shelf,max_stock=1500,backorders=0,
           aliases={'P01':'cola|cold drink|soft drink','P03':'mango drink|mango drinks','P13':'sugar-free cold drink|sugar-free cold drinks|sugar free cola|sugar-free cola'}.get(pid,name.lower())))
-    # USER-MAINTAINED SIMULATION CALENDAR: illustrative dates, not authoritative religious dates.
-    festivals=[]
-    for year in [2024,2025,2026,2027]:
-        for name,month,day in [('Holi',3,15),('Eid',4,10),('Raksha Bandhan',8,20),('Navratri',10,1),('Dussehra',10,10),('Diwali',11,8),('Christmas',12,25)]:
-            festivals.append(dict(festival_name=name,festival_date=f'{year}-{month:02d}-{day:02d}',region='Demo region',calendar_source='Synthetic scenario; replace with verified local dates'))
-    events=pd.DataFrame(festivals);event_dates=pd.to_datetime(events.festival_date)
+    # Actual public calendar dates, imported through the connected Google Calendar.
+    # Demand/stock remain synthetic; regenerated so event labels match simulated history.
+    events, calendar_metadata = load_holiday_snapshot()
+    event_dates = events.festival_date
     sales=[]
     for pid,name,cat,price,cost,lead,moq,pack,shelf,base in specs[:-1]:
         closing=0
@@ -88,7 +89,7 @@ def generate():
     tables={'products':pd.DataFrame(products),'sales':sales,'batches':pd.DataFrame(batches),'purchase_orders':orders,'reviews':reviews,'festivals':events}
     out=ROOT/'data/sample';out.mkdir(parents=True,exist_ok=True)
     for name,frame in tables.items():frame.to_csv(out/f'{name}.csv',index=False)
-    (out/'metadata.json').write_text(json.dumps({'synthetic':True,'seed':42,'as_of':str(AS_OF.date()),'calendar':'Illustrative scenario dates, not verified festival dates','rows':{k:len(v) for k,v in tables.items()}},indent=2))
+    (out/'metadata.json').write_text(json.dumps({'synthetic':True,'seed':42,'as_of':str(AS_OF.date()),'calendar':'Public Google Calendar holiday snapshot; dates as listed, regional differences possible','calendar_imported_on':calendar_metadata['retrieved_on'],'dataset_version':'google-calendar-v2','rows':{k:len(v) for k,v in tables.items()}},indent=2))
     return tables
 if __name__=='__main__':
     print({k:len(v) for k,v in generate().items()})

@@ -1,168 +1,529 @@
 {
-  "selected_method": "HistGradientBoosting",
-  "selection": "Lowest pooled MAE on three 30-day validation windows; final 30 days untouched by selection.",
+  "version": 2,
+  "selected_method": "Seasonal Poisson regression",
+  "selection": "Lowest pooled validation MAE before the test period; fixed candidate configurations. Test uses expanding rolling origins with choice frozen. Seasonal model falls back to moving average when annual history is insufficient.",
   "as_of": "2026-10-16",
   "validation_origins": [
+    "2024-12-25",
+    "2025-03-25",
+    "2025-06-23",
+    "2025-09-21"
+  ],
+  "test_origins": [
+    "2025-10-21",
+    "2025-11-20",
+    "2025-12-20",
+    "2026-01-19",
+    "2026-02-18",
+    "2026-03-20",
+    "2026-04-19",
+    "2026-05-19",
     "2026-06-18",
     "2026-07-18",
-    "2026-08-17"
+    "2026-08-17",
+    "2026-09-16"
   ],
-  "test_origin": "2026-09-16",
+  "season_coverage": "12 disjoint 30-day test windows across 360 days",
   "results": [
     {
       "split": "test",
       "method": "HistGradientBoosting",
       "horizon": 7,
-      "n": 83,
-      "mae": 2.999052391504362,
-      "rmse": 4.074835674736004,
-      "wape_pct": 23.133954321083834,
-      "bias": -0.0015025403300903833
+      "n": 981,
+      "mae": 2.9314258393984227,
+      "rmse": 4.012958843224733,
+      "wape_pct": 18.934216147286364,
+      "bias": -0.23191944414433643
     },
     {
       "split": "test",
       "method": "HistGradientBoosting",
       "horizon": 14,
-      "n": 165,
-      "mae": 2.7993006787961083,
-      "rmse": 3.76839028110232,
-      "wape_pct": 20.909217383492887,
-      "bias": -0.08746980760585112
+      "n": 1961,
+      "mae": 2.913254971041895,
+      "rmse": 4.009083292875783,
+      "wape_pct": 18.958925424661192,
+      "bias": -0.12298594916378537
     },
     {
       "split": "test",
       "method": "HistGradientBoosting",
       "horizon": 30,
-      "n": 353,
-      "mae": 2.9754290970930493,
-      "rmse": 4.064365183766827,
-      "wape_pct": 22.24796592403826,
-      "bias": -0.16330400274366588
-    },
-    {
-      "split": "test",
-      "method": "Insufficient history",
-      "horizon": 7,
-      "n": 0,
-      "mae": null,
-      "rmse": null,
-      "wape_pct": null,
-      "bias": null
-    },
-    {
-      "split": "test",
-      "method": "Insufficient history",
-      "horizon": 14,
-      "n": 0,
-      "mae": null,
-      "rmse": null,
-      "wape_pct": null,
-      "bias": null
-    },
-    {
-      "split": "test",
-      "method": "Insufficient history",
-      "horizon": 30,
-      "n": 0,
-      "mae": null,
-      "rmse": null,
-      "wape_pct": null,
-      "bias": null
+      "n": 4201,
+      "mae": 2.989574514363859,
+      "rmse": 4.104933697294164,
+      "wape_pct": 19.352814556894987,
+      "bias": -0.2843189132976713
     },
     {
       "split": "test",
       "method": "Moving average 28d",
       "horizon": 7,
-      "n": 83,
-      "mae": 3.204914897685981,
-      "rmse": 4.41420821050961,
-      "wape_pct": 24.721927184752456,
-      "bias": 0.8600259624356013
+      "n": 981,
+      "mae": 3.1491177421544174,
+      "rmse": 4.329887099045585,
+      "wape_pct": 20.34029829505849,
+      "bias": -0.035467016784931
     },
     {
       "split": "test",
       "method": "Moving average 28d",
       "horizon": 14,
-      "n": 165,
-      "mae": 3.302361275088548,
-      "rmse": 4.462079405292032,
-      "wape_pct": 24.666799927098708,
-      "bias": 0.4881032547699218
+      "n": 1961,
+      "mae": 3.199042432543729,
+      "rmse": 4.444019755498323,
+      "wape_pct": 20.81877745401471,
+      "bias": 0.06362430347328893
     },
     {
       "split": "test",
       "method": "Moving average 28d",
       "horizon": 30,
-      "n": 353,
-      "mae": 3.5987972262759795,
-      "rmse": 4.856040643238787,
-      "wape_pct": 26.909032426931173,
-      "bias": 0.5160447044299739
+      "n": 4201,
+      "mae": 3.38887941331506,
+      "rmse": 4.749620852532868,
+      "wape_pct": 21.937688633099985,
+      "bias": -0.04730859769768642
+    },
+    {
+      "split": "test",
+      "method": "Seasonal Poisson regression",
+      "horizon": 7,
+      "n": 981,
+      "mae": 2.8473444891091835,
+      "rmse": 3.884511469371437,
+      "wape_pct": 18.391130786253022,
+      "bias": -0.05966414132980729
+    },
+    {
+      "split": "test",
+      "method": "Seasonal Poisson regression",
+      "horizon": 14,
+      "n": 1961,
+      "mae": 2.8484293441726893,
+      "rmse": 3.896836329483127,
+      "wape_pct": 18.537052214922657,
+      "bias": 0.0735683314745107
+    },
+    {
+      "split": "test",
+      "method": "Seasonal Poisson regression",
+      "horizon": 30,
+      "n": 4201,
+      "mae": 2.8844989195328843,
+      "rmse": 3.9575339300344083,
+      "wape_pct": 18.672614584808997,
+      "bias": -0.05190081263350194
     },
     {
       "split": "test",
       "method": "Weekly seasonal naive",
       "horizon": 7,
-      "n": 83,
-      "mae": 3.8702081051478645,
-      "rmse": 5.279542466424948,
-      "wape_pct": 29.853835755322745,
-      "bias": 0.2316538882803943
+      "n": 981,
+      "mae": 4.15517139703062,
+      "rmse": 5.723048100838068,
+      "wape_pct": 26.838445749848816,
+      "bias": -0.22913553698542521
     },
     {
       "split": "test",
       "method": "Weekly seasonal naive",
       "horizon": 14,
-      "n": 165,
-      "mae": 3.8922865013774106,
-      "rmse": 5.268837027878743,
-      "wape_pct": 29.07321288941932,
-      "bias": -0.1440771349862259
+      "n": 1961,
+      "mae": 4.139062138389863,
+      "rmse": 5.735044069579584,
+      "wape_pct": 26.936252126846057,
+      "bias": -0.12479219065417467
     },
     {
       "split": "test",
       "method": "Weekly seasonal naive",
       "horizon": 30,
-      "n": 353,
-      "mae": 4.094128251352047,
-      "rmse": 5.455951509908048,
-      "wape_pct": 30.612736130634882,
-      "bias": -0.18091681689415404
+      "n": 4201,
+      "mae": 4.23977080616718,
+      "rmse": 5.851543649450562,
+      "wape_pct": 27.445878261693057,
+      "bias": -0.23580890543442393
     },
     {
       "split": "validation",
       "method": "HistGradientBoosting",
       "horizon": 7,
-      "n": 248,
-      "mae": 3.1238190768099576,
-      "rmse": 4.2537264934758925,
-      "wape_pct": 19.280914162490532,
-      "bias": -0.7447130229224128
+      "n": 325,
+      "mae": 3.058931612450856,
+      "rmse": 4.132423784755786,
+      "wape_pct": 19.799895918074654,
+      "bias": -0.35869979384388834
     },
     {
       "split": "validation",
       "method": "HistGradientBoosting",
       "horizon": 14,
-      "n": 495,
-      "mae": 3.0720381167804667,
-      "rmse": 4.23147367685617,
-      "wape_pct": 19.388739867478403,
-      "bias": -0.49757739215637337
+      "n": 652,
+      "mae": 3.1230294099967444,
+      "rmse": 4.3031613533642945,
+      "wape_pct": 20.43982308088614,
+      "bias": -0.43081426536458084
     },
     {
       "split": "validation",
       "method": "HistGradientBoosting",
       "horizon": 30,
-      "n": 1050,
-      "mae": 3.1005614939943342,
-      "rmse": 4.223884804672293,
-      "wape_pct": 20.119829236104387,
-      "bias": -0.3526963482352484
+      "n": 1390,
+      "mae": 3.116650902079288,
+      "rmse": 4.271880996290526,
+      "wape_pct": 21.092286644384878,
+      "bias": -0.19727763937921292
     },
     {
       "split": "validation",
-      "method": "Insufficient history",
+      "method": "Moving average 28d",
       "horizon": 7,
+      "n": 325,
+      "mae": 3.2731274800069374,
+      "rmse": 4.490758799783381,
+      "wape_pct": 21.18634596698376,
+      "bias": -0.421377373872322
+    },
+    {
+      "split": "validation",
+      "method": "Moving average 28d",
+      "horizon": 14,
+      "n": 652,
+      "mae": 3.333611663836531,
+      "rmse": 4.692278573231655,
+      "wape_pct": 21.818056663535618,
+      "bias": -0.28140893612015727
+    },
+    {
+      "split": "validation",
+      "method": "Moving average 28d",
+      "horizon": 30,
+      "n": 1390,
+      "mae": 3.439039936044727,
+      "rmse": 4.830816116482038,
+      "wape_pct": 23.27409080822908,
+      "bias": 0.1285835816171164
+    },
+    {
+      "split": "validation",
+      "method": "Seasonal Poisson regression",
+      "horizon": 7,
+      "n": 325,
+      "mae": 3.0222791426476117,
+      "rmse": 4.151788096757438,
+      "wape_pct": 19.562651291783983,
+      "bias": -0.3116866229532068
+    },
+    {
+      "split": "validation",
+      "method": "Seasonal Poisson regression",
+      "horizon": 14,
+      "n": 652,
+      "mae": 3.104713913402454,
+      "rmse": 4.295656403288913,
+      "wape_pct": 20.319950527388073,
+      "bias": -0.296747346506657
+    },
+    {
+      "split": "validation",
+      "method": "Seasonal Poisson regression",
+      "horizon": 30,
+      "n": 1390,
+      "mae": 3.088196343964314,
+      "rmse": 4.219684047910745,
+      "wape_pct": 20.899717211696757,
+      "bias": -0.10324228155967836
+    },
+    {
+      "split": "validation",
+      "method": "Weekly seasonal naive",
+      "horizon": 7,
+      "n": 325,
+      "mae": 4.2560094674556215,
+      "rmse": 5.763177583746745,
+      "wape_pct": 27.548358433042758,
+      "bias": -0.6136062285892245
+    },
+    {
+      "split": "validation",
+      "method": "Weekly seasonal naive",
+      "horizon": 14,
+      "n": 652,
+      "mae": 4.313966886896334,
+      "rmse": 5.774977622707478,
+      "wape_pct": 28.234354650234994,
+      "bias": -0.4690926910243991
+    },
+    {
+      "split": "validation",
+      "method": "Weekly seasonal naive",
+      "horizon": 30,
+      "n": 1390,
+      "mae": 4.213020513706971,
+      "rmse": 5.671166312965686,
+      "wape_pct": 28.512091698976043,
+      "bias": -0.13906817647448663
+    }
+  ],
+  "by_season": [
+    {
+      "method": "HistGradientBoosting",
+      "season": "Monsoon (Jun\u2013Sep)",
+      "n": 1425,
+      "mae": 3.068784917917778,
+      "rmse": 4.189931974914673,
+      "wape_pct": 19.950812117490916,
+      "bias": -0.20764833813707487
+    },
+    {
+      "method": "HistGradientBoosting",
+      "season": "Post-monsoon (Oct\u2013Nov)",
+      "n": 655,
+      "mae": 2.888134240843095,
+      "rmse": 3.79274982609515,
+      "wape_pct": 22.955077390513615,
+      "bias": -0.25198461240505543
+    },
+    {
+      "method": "HistGradientBoosting",
+      "season": "Pre-monsoon / summer (Mar\u2013May)",
+      "n": 1074,
+      "mae": 2.9928372901672473,
+      "rmse": 4.209763712904232,
+      "wape_pct": 16.397017036370062,
+      "bias": -0.5428953377871448
+    },
+    {
+      "method": "HistGradientBoosting",
+      "season": "Winter (Dec\u2013Feb)",
+      "n": 1047,
+      "mae": 2.9418804674478376,
+      "rmse": 4.066842336883041,
+      "wape_pct": 20.35385481674411,
+      "bias": -0.1436536380224265
+    },
+    {
+      "method": "Moving average 28d",
+      "season": "Monsoon (Jun\u2013Sep)",
+      "n": 1425,
+      "mae": 3.5279642050367808,
+      "rmse": 4.929463477129104,
+      "wape_pct": 22.936032630035186,
+      "bias": 1.1442764689501534
+    },
+    {
+      "method": "Moving average 28d",
+      "season": "Post-monsoon (Oct\u2013Nov)",
+      "n": 655,
+      "mae": 3.117594065287394,
+      "rmse": 4.128215495725241,
+      "wape_pct": 24.778838888038386,
+      "bias": 0.3755988440024281
+    },
+    {
+      "method": "Moving average 28d",
+      "season": "Pre-monsoon / summer (Mar\u2013May)",
+      "n": 1074,
+      "mae": 3.3656713739107325,
+      "rmse": 4.7962584558409995,
+      "wape_pct": 18.43968298515598,
+      "bias": -0.792242054455158
+    },
+    {
+      "method": "Moving average 28d",
+      "season": "Winter (Dec\u2013Feb)",
+      "n": 1047,
+      "mae": 3.3931024401296876,
+      "rmse": 4.815008762299995,
+      "wape_pct": 23.47570379181777,
+      "bias": -1.1695192583750718
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "season": "Monsoon (Jun\u2013Sep)",
+      "n": 1425,
+      "mae": 2.9475700071852007,
+      "rmse": 4.022312381034168,
+      "wape_pct": 19.162768649294726,
+      "bias": 0.02290209601344961
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "season": "Post-monsoon (Oct\u2013Nov)",
+      "n": 655,
+      "mae": 2.78154513387805,
+      "rmse": 3.728546763348886,
+      "wape_pct": 22.1079002874666,
+      "bias": -0.08027328667435944
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "season": "Pre-monsoon / summer (Mar\u2013May)",
+      "n": 1074,
+      "mae": 2.900313844834928,
+      "rmse": 4.038494328670544,
+      "wape_pct": 15.890103909364447,
+      "bias": -0.17454308159539578
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "season": "Winter (Dec\u2013Feb)",
+      "n": 1047,
+      "mae": 2.8468419949149,
+      "rmse": 3.9237139376004375,
+      "wape_pct": 19.696316451965245,
+      "bias": -0.010155232366138328
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "season": "Monsoon (Jun\u2013Sep)",
+      "n": 1425,
+      "mae": 4.249070070178104,
+      "rmse": 5.960216833509436,
+      "wape_pct": 27.62409256810894,
+      "bias": 0.39919098650400586
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "season": "Post-monsoon (Oct\u2013Nov)",
+      "n": 655,
+      "mae": 4.081307631656122,
+      "rmse": 5.444440125700397,
+      "wape_pct": 32.438496526328834,
+      "bias": -0.1817008770875349
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "season": "Pre-monsoon / summer (Mar\u2013May)",
+      "n": 1074,
+      "mae": 4.16094715190137,
+      "rmse": 5.69370485890055,
+      "wape_pct": 22.796802740101366,
+      "bias": -0.5884703909333343
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "season": "Winter (Dec\u2013Feb)",
+      "n": 1047,
+      "mae": 4.407104648355012,
+      "rmse": 6.102432845637071,
+      "wape_pct": 30.491234830025093,
+      "bias": -0.7721576820854696
+    }
+  ],
+  "by_product": [
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P01",
+      "n": 360,
+      "mae": 4.046587417720939,
+      "rmse": 5.1891882600677866,
+      "wape_pct": 17.885469249595314,
+      "bias": -0.3308661037427846
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P02",
+      "n": 360,
+      "mae": 4.49001498074753,
+      "rmse": 5.78480938725471,
+      "wape_pct": 14.298145891809913,
+      "bias": -0.9720584506175328
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P03",
+      "n": 360,
+      "mae": 3.8356541958724355,
+      "rmse": 4.921869460215133,
+      "wape_pct": 19.001451912950003,
+      "bias": -0.49441946722355967
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P04",
+      "n": 350,
+      "mae": 5.316619505160993,
+      "rmse": 6.519816501516148,
+      "wape_pct": 13.168330810320203,
+      "bias": -1.3607889434340983
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P05",
+      "n": 251,
+      "mae": 1.6158494993820185,
+      "rmse": 1.9207140406390344,
+      "wape_pct": 29.453756306818203,
+      "bias": -0.0384549859925505
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P06",
+      "n": 360,
+      "mae": 3.5324146742837446,
+      "rmse": 4.351109277059184,
+      "wape_pct": 18.10463101853855,
+      "bias": -0.29308019974851746
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P07",
+      "n": 360,
+      "mae": 2.9054334970019866,
+      "rmse": 3.7091939431175405,
+      "wape_pct": 28.885834270110884,
+      "bias": -0.0014857058998968694
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P08",
+      "n": 360,
+      "mae": 1.930926659918457,
+      "rmse": 2.42139022450389,
+      "wape_pct": 33.64635031803701,
+      "bias": -0.04287157437318161
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P09",
+      "n": 360,
+      "mae": 0.7967729666415393,
+      "rmse": 0.9519192316608304,
+      "wape_pct": 93.12930778927083,
+      "bias": 0.3757581429342463
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P10",
+      "n": 360,
+      "mae": 1.6441008905857069,
+      "rmse": 2.035633782444978,
+      "wape_pct": 43.01426748625396,
+      "bias": -0.04310153377796432
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P11",
+      "n": 360,
+      "mae": 1.8866979448969576,
+      "rmse": 2.3460420482640805,
+      "wape_pct": 38.222355664766724,
+      "bias": 0.025372988742396352
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P12",
+      "n": 360,
+      "mae": 3.522528671473306,
+      "rmse": 4.360344308684294,
+      "wape_pct": 19.512391471463154,
+      "bias": -0.19129093817501794
+    },
+    {
+      "method": "HistGradientBoosting",
+      "product_id": "P13",
       "n": 0,
       "mae": null,
       "rmse": null,
@@ -170,9 +531,116 @@
       "bias": null
     },
     {
-      "split": "validation",
-      "method": "Insufficient history",
-      "horizon": 14,
+      "method": "Moving average 28d",
+      "product_id": "P01",
+      "n": 360,
+      "mae": 4.895833333333333,
+      "rmse": 6.255753021154049,
+      "wape_pct": 21.639042357274402,
+      "bias": -0.2589285714285713
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P02",
+      "n": 360,
+      "mae": 6.321825396825395,
+      "rmse": 7.9378761717422766,
+      "wape_pct": 20.131420989448408,
+      "bias": -0.10515873015872994
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P03",
+      "n": 360,
+      "mae": 4.813888888888889,
+      "rmse": 5.951491004900024,
+      "wape_pct": 23.847529929819732,
+      "bias": 0.013293650793650613
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P04",
+      "n": 350,
+      "mae": 5.726520181405896,
+      "rmse": 7.120907157590778,
+      "wape_pct": 14.183582644484208,
+      "bias": -0.2093044595616022
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P05",
+      "n": 251,
+      "mae": 1.6188403317652373,
+      "rmse": 1.972115411473527,
+      "wape_pct": 29.508273295067145,
+      "bias": 0.03135571623793996
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P06",
+      "n": 360,
+      "mae": 3.5450396825396826,
+      "rmse": 4.444683950462747,
+      "wape_pct": 18.169337780670354,
+      "bias": 0.14960317460317388
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P07",
+      "n": 360,
+      "mae": 2.869246031746032,
+      "rmse": 3.6399984893221555,
+      "wape_pct": 28.526058310648207,
+      "bias": -0.22499999999999995
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P08",
+      "n": 360,
+      "mae": 1.9912698412698413,
+      "rmse": 2.4978278545427637,
+      "wape_pct": 34.697828792698104,
+      "bias": 0.028968253968254074
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P09",
+      "n": 360,
+      "mae": 0.6916666666666667,
+      "rmse": 0.8799262041310927,
+      "wape_pct": 80.84415584415584,
+      "bias": 0.028373015873015897
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P10",
+      "n": 360,
+      "mae": 1.8839285714285716,
+      "rmse": 2.3497855959509955,
+      "wape_pct": 49.28882890365449,
+      "bias": -0.05734126984126989
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P11",
+      "n": 360,
+      "mae": 2.208928571428572,
+      "rmse": 2.8232300356979625,
+      "wape_pct": 44.75038186349386,
+      "bias": 0.0430555555555556
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P12",
+      "n": 360,
+      "mae": 3.6285714285714286,
+      "rmse": 4.4904850275123875,
+      "wape_pct": 20.099795572945286,
+      "bias": 0.012698412698412653
+    },
+    {
+      "method": "Moving average 28d",
+      "product_id": "P13",
       "n": 0,
       "mae": null,
       "rmse": null,
@@ -180,9 +648,116 @@
       "bias": null
     },
     {
-      "split": "validation",
-      "method": "Insufficient history",
-      "horizon": 30,
+      "method": "Seasonal Poisson regression",
+      "product_id": "P01",
+      "n": 360,
+      "mae": 3.8452658664614887,
+      "rmse": 4.925660716476784,
+      "wape_pct": 16.995650238503817,
+      "bias": -0.3815773734681161
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P02",
+      "n": 360,
+      "mae": 4.4021110115447994,
+      "rmse": 5.638797316387578,
+      "wape_pct": 14.01822170859025,
+      "bias": -0.1524009122944592
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P03",
+      "n": 360,
+      "mae": 3.6246762316728107,
+      "rmse": 4.56867017629974,
+      "wape_pct": 17.956287923520186,
+      "bias": 0.2835923479550319
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P04",
+      "n": 350,
+      "mae": 5.229693783798783,
+      "rmse": 6.411720829901377,
+      "wape_pct": 12.953031097088486,
+      "bias": -0.389623615070638
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P05",
+      "n": 251,
+      "mae": 1.5226646309898224,
+      "rmse": 1.8364843068462715,
+      "wape_pct": 27.755179548180497,
+      "bias": 0.012651375263180024
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P06",
+      "n": 360,
+      "mae": 3.375678100795112,
+      "rmse": 4.194688762327676,
+      "wape_pct": 17.301311450544425,
+      "bias": -0.09152474623375927
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P07",
+      "n": 360,
+      "mae": 2.667734990133748,
+      "rmse": 3.4259034291964476,
+      "wape_pct": 26.52263453322699,
+      "bias": -0.024773836527145883
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P08",
+      "n": 360,
+      "mae": 1.9037407770446606,
+      "rmse": 2.3888418598496526,
+      "wape_pct": 33.17263696689631,
+      "bias": 0.06721299754313327
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P09",
+      "n": 360,
+      "mae": 0.6839983988272332,
+      "rmse": 0.8668587875957018,
+      "wape_pct": 79.9478647979883,
+      "bias": 0.03794435783676043
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P10",
+      "n": 360,
+      "mae": 1.6343262715660418,
+      "rmse": 2.0761748762089343,
+      "wape_pct": 42.758536174692956,
+      "bias": -0.030766639836978537
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P11",
+      "n": 360,
+      "mae": 1.8383433697947933,
+      "rmse": 2.249959661344514,
+      "wape_pct": 37.24274694013087,
+      "bias": -0.004800563249560685
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P12",
+      "n": 360,
+      "mae": 3.5385647439638332,
+      "rmse": 4.284159078707175,
+      "wape_pct": 19.601220308154794,
+      "bias": 0.06142063552599243
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "product_id": "P13",
       "n": 0,
       "mae": null,
       "rmse": null,
@@ -190,95 +765,226 @@
       "bias": null
     },
     {
-      "split": "validation",
-      "method": "Moving average 28d",
-      "horizon": 7,
-      "n": 248,
-      "mae": 3.3112268125510904,
-      "rmse": 4.523918750022535,
-      "wape_pct": 20.437636871893243,
-      "bias": 0.44020896775990165
-    },
-    {
-      "split": "validation",
-      "method": "Moving average 28d",
-      "horizon": 14,
-      "n": 495,
-      "mae": 3.3611514757713583,
-      "rmse": 4.684836431251846,
-      "wape_pct": 21.2134384866355,
-      "bias": 0.8186195229937923
-    },
-    {
-      "split": "validation",
-      "method": "Moving average 28d",
-      "horizon": 30,
-      "n": 1050,
-      "mae": 3.639303719616501,
-      "rmse": 5.084684965779712,
-      "wape_pct": 23.61577718062744,
-      "bias": 1.2649068279163518
-    },
-    {
-      "split": "validation",
       "method": "Weekly seasonal naive",
-      "horizon": 7,
-      "n": 248,
-      "mae": 4.2353093755895115,
-      "rmse": 5.866456115547596,
-      "wape_pct": 26.141282358043778,
-      "bias": -0.3917993909504945
+      "product_id": "P01",
+      "n": 360,
+      "mae": 5.858333333333333,
+      "rmse": 7.527172997436244,
+      "wape_pct": 25.893186003683244,
+      "bias": -0.825
     },
     {
-      "split": "validation",
       "method": "Weekly seasonal naive",
-      "horizon": 14,
-      "n": 495,
-      "mae": 4.4173793068529905,
-      "rmse": 6.181048751741743,
-      "wape_pct": 27.87967304465422,
-      "bias": -0.01757170704539129
+      "product_id": "P02",
+      "n": 360,
+      "mae": 6.513888888888889,
+      "rmse": 8.091319079386528,
+      "wape_pct": 20.743034055727556,
+      "bias": -0.7694444444444445
     },
     {
-      "split": "validation",
       "method": "Weekly seasonal naive",
-      "horizon": 30,
-      "n": 1050,
-      "mae": 4.43463261327923,
-      "rmse": 6.1591598498031574,
-      "wape_pct": 28.776739657272053,
-      "bias": 0.4351935394040657
+      "product_id": "P03",
+      "n": 360,
+      "mae": 5.775,
+      "rmse": 7.173446405552448,
+      "wape_pct": 28.60877941378836,
+      "bias": -1.0027777777777778
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P04",
+      "n": 350,
+      "mae": 6.979365079365079,
+      "rmse": 8.743292381569205,
+      "wape_pct": 17.28665896099199,
+      "bias": -0.45301587301587304
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P05",
+      "n": 251,
+      "mae": 1.9183242188468022,
+      "rmse": 2.423160920663509,
+      "wape_pct": 34.96727515835493,
+      "bias": 0.23475037380693525
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P06",
+      "n": 360,
+      "mae": 4.863888888888889,
+      "rmse": 6.266533686532328,
+      "wape_pct": 24.928815489749432,
+      "bias": 0.4027777777777778
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P07",
+      "n": 360,
+      "mae": 3.841666666666667,
+      "rmse": 5.099836598689544,
+      "wape_pct": 38.19386909693455,
+      "bias": -0.4638888888888889
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P08",
+      "n": 360,
+      "mae": 2.797222222222222,
+      "rmse": 3.514651871491368,
+      "wape_pct": 48.74152952565344,
+      "bias": 0.030555555555555555
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P09",
+      "n": 360,
+      "mae": 0.9027777777777778,
+      "rmse": 1.223610322865177,
+      "wape_pct": 105.51948051948052,
+      "bias": -0.025
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P10",
+      "n": 360,
+      "mae": 2.611111111111111,
+      "rmse": 3.3656764220254116,
+      "wape_pct": 68.31395348837209,
+      "bias": 0.19444444444444445
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P11",
+      "n": 360,
+      "mae": 2.975,
+      "rmse": 3.8067921753973737,
+      "wape_pct": 60.270118176702304,
+      "bias": 0.33611111111111114
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P12",
+      "n": 360,
+      "mae": 5.213888888888889,
+      "rmse": 6.52835694830211,
+      "wape_pct": 28.88136636405601,
+      "bias": -0.3527777777777778
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "product_id": "P13",
+      "n": 0,
+      "mae": null,
+      "rmse": null,
+      "wape_pct": null,
+      "bias": null
+    }
+  ],
+  "by_event_window": [
+    {
+      "method": "HistGradientBoosting",
+      "event_window": false,
+      "n": 3689,
+      "mae": 2.946513810386808,
+      "rmse": 4.049493804429216,
+      "wape_pct": 19.073646112369154,
+      "bias": -0.26500632468653745
+    },
+    {
+      "method": "HistGradientBoosting",
+      "event_window": true,
+      "n": 512,
+      "mae": 3.2998302506360098,
+      "rmse": 4.484167326028337,
+      "wape_pct": 21.364606579737444,
+      "bias": -0.42346762303687574
+    },
+    {
+      "method": "Moving average 28d",
+      "event_window": false,
+      "n": 3689,
+      "mae": 3.308575829533712,
+      "rmse": 4.661516833674067,
+      "wape_pct": 21.41737950998432,
+      "bias": 0.06449740947908084
+    },
+    {
+      "method": "Moving average 28d",
+      "event_window": true,
+      "n": 512,
+      "mae": 3.967473008177156,
+      "rmse": 5.341634018901245,
+      "wape_pct": 25.687230401956295,
+      "bias": -0.8528796142506062
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "event_window": false,
+      "n": 3689,
+      "mae": 2.8430757580078394,
+      "rmse": 3.9027003514158647,
+      "wape_pct": 18.404061330966027,
+      "bias": -0.056297002748991305
+    },
+    {
+      "method": "Seasonal Poisson regression",
+      "event_window": true,
+      "n": 512,
+      "mae": 3.1829560345053283,
+      "rmse": 4.332147028830472,
+      "wape_pct": 20.607909581015782,
+      "bias": -0.020225919399048345
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "event_window": false,
+      "n": 3689,
+      "mae": 4.192513849134417,
+      "rmse": 5.812214595328112,
+      "wape_pct": 27.139368971462176,
+      "bias": -0.10905189361537905
+    },
+    {
+      "method": "Weekly seasonal naive",
+      "event_window": true,
+      "n": 512,
+      "mae": 4.580260873538012,
+      "rmse": 6.127455386454956,
+      "wape_pct": 29.654698624828807,
+      "bias": -1.1491030784821903
     }
   ],
   "synthetic_latent_test": {
     "HistGradientBoosting": {
-      "n": 360,
-      "mae": 2.979290940995781,
-      "rmse": 4.053600993661003,
-      "wape_pct": 22.424100747616162,
-      "bias": -0.2218460568143018
-    },
-    "Insufficient history": {
-      "n": 0,
-      "mae": null,
-      "rmse": null,
-      "wape_pct": null,
-      "bias": null
+      "n": 4320,
+      "mae": 3.0307706527554186,
+      "rmse": 4.136352033036351,
+      "wape_pct": 19.720939916409467,
+      "bias": -0.3949220622184132
     },
     "Moving average 28d": {
-      "n": 360,
-      "mae": 3.599401421623644,
-      "rmse": 4.838855463340768,
-      "wape_pct": 27.091459581528575,
-      "bias": 0.4354296937630274
+      "n": 4320,
+      "mae": 3.4179535545404507,
+      "rmse": 4.76210809218948,
+      "wape_pct": 22.240302685024698,
+      "bias": -0.16014042242368548
+    },
+    "Seasonal Poisson regression": {
+      "n": 4320,
+      "mae": 2.9250115685305604,
+      "rmse": 3.9884183689726362,
+      "wape_pct": 19.03277549073221,
+      "bias": -0.16427849175767498
     },
     "Weekly seasonal naive": {
-      "n": 360,
-      "mae": 4.086994949494949,
-      "rmse": 5.433275553614593,
-      "wape_pct": 30.76140877729838,
-      "bias": -0.24987373737373741
+      "n": 4320,
+      "mae": 4.241304299017546,
+      "rmse": 5.833093980275667,
+      "wape_pct": 27.597768630922566,
+      "bias": -0.33244693142049847
     }
   },
-  "limitations": "Synthetic single-store data; observed metric excludes censored days and can be optimistic. Latent metric is simulation-only, unavailable in real shops. No calibrated intervals or real-world business impact measured."
+  "limitations": "Sales remain synthetic. All candidates evaluated on the same regenerated Google-calendar-aligned data. Original model is retained as a comparator; v1 results use different data/protocol and are not directly comparable. Calendar snapshot was retrieved retrospectively, not a historical point-in-time feed. Observed scores exclude censored days; no real-store accuracy or ROI established."
 }

@@ -10,6 +10,8 @@ import plotly.express as px
 import streamlit as st
 from src.data import ROOT,SCHEMAS,load_demo,read_csv,validate,safe_csv,serializable,historical_summary,save_snapshot,load_snapshot
 from src.forecasting import METHODS,train,predict,evaluate
+from src.seasonal_model import SEASONAL_METHOD
+from src.calendar_data import load_holiday_snapshot,season_label
 from src.inventory import plan
 from src.reviews import analyze
 from src.seasonality import seasonal_profile,festival_evidence
@@ -19,7 +21,7 @@ st.markdown('''<style>.stApp {background:#f5f7fa} h1,h2,h3 {color:#102c3a} [data
 
 @st.cache_data(show_spinner=False,max_entries=4)
 def forecast_snapshot(tables,method):
-    origin=tables['sales'].date.max();model=train(tables,origin) if method==METHODS[2] else None
+    origin=tables['sales'].date.max();model=train(tables,origin,method) if method in (METHODS[2],SEASONAL_METHOD) else None
     if method==METHODS[2] and model is None:method=METHODS[0]
     return predict(tables,origin,method,model)
 
@@ -31,19 +33,24 @@ def reset(tables,source):
     st.session_state.pop('custom_evaluation',None)
 
 if 'tables' not in st.session_state:reset(load_demo(),'Synthetic demo')
+# Refresh only the bundled demo after its data/model revision; preserve uploaded snapshots.
+if st.session_state.source=='Synthetic demo' and st.session_state.get('demo_version')!=2:
+    reset(load_demo(),'Synthetic demo');st.session_state.demo_version=2
 t=st.session_state.tables;as_of=t['sales'].date.max();demo=st.session_state.source=='Synthetic demo'
 report=json.loads((ROOT/'evaluation/metrics.json').read_text()) if demo else st.session_state.get('custom_evaluation')
+if report and report.get('version')!=2:report=None
 method=report['selected_method'] if report else METHODS[0]
 with st.sidebar:
     st.title('StockSense')
     st.caption('Proposed Revio inventory module')
-    section=st.radio('Workspace',['Executive Dashboard','Product Demand Forecasting','Smart Reorder Planner','Seasonal and Festival Intelligence','Expiry Management','Slow-Moving Inventory','Review Intelligence','Data Management'])
+    section=st.radio('Workspace',['Executive Dashboard','Product Demand Forecasting','Smart Reorder Planner','Expiry Management','Slow-Moving Inventory','Review Intelligence','Data Management'])
     st.divider();review=st.slider('Review period (days)',1,21,7);safety=st.slider('Safety buffer (days)',0.,5.,1.5,.5)
-    st.caption('Safety days are a configurable policy, not a guaranteed service level. Orders remain drafts for owner review.')
+    st.caption('Review period = days between stock checks. Safety buffer = extra demand-days held as a precaution. Draft orders need owner review.')
 
 st.title(section)
 st.caption(f"REVIO STOCKSENSE  /  {st.session_state.source}  /  Snapshot {as_of:%d %b %Y}")
 if demo:st.info('Synthetic demonstration data • No Cynbit customer records • No live Revio or POS connection')
+if t['festivals'].calendar_source.str.contains('Google Calendar',case=False).any():st.caption('Calendar source: '+ ' · '.join(t['festivals'].calendar_source.drop_duplicates().astype(str)) + '. Regional dates may differ; inspect tentative entries in the calendar table.')
 if t['festivals'].calendar_source.str.contains('synthetic',case=False).any():st.warning('Illustrative festival scenario: these are not verified religious calendar dates. Replace with a verified regional calendar before business use.')
 if not demo and not report:st.info('Uploaded data uses the moving-average baseline until you run its own chronological evaluation in Data Management.')
 if 'available_stock' not in t['sales'] and 'stockout' not in t['sales']:st.warning('Stock availability is missing. Forecasts model recorded sales; lost demand cannot be identified.')
@@ -61,7 +68,7 @@ if section=='Executive Dashboard':
     st.caption('Inventory cost includes expired/unknown stock; it is not saleable inventory value. Draft quantities are constrained recommendations, never placed orders.')
     c=st.columns(2)
     with c[0]:
-        st.subheader('Where attention is needed');st.plotly_chart(px.bar(reorders,x='product',y='recommended_order',color='priority',color_discrete_map={'P1':'#c46238','P2':'#087e8b','P3':'#91a6b0','P4':'#b8c6cc'},labels={'recommended_order':'Draft units','product':''}),width='stretch')
+        st.subheader('Suggested order quantities');st.plotly_chart(px.bar(reorders,x='product',y='recommended_order',color='priority',color_discrete_map={'P1':'#c46238','P2':'#087e8b','P3':'#91a6b0','P4':'#b8c6cc'},labels={'recommended_order':'Draft units','product':''}),width='stretch')
     with c[1]:
         st.subheader('Sales recorded over time');daily=t['sales'].groupby('date',as_index=False).quantity_sold.sum();st.plotly_chart(px.line(daily.tail(120),x='date',y='quantity_sold',labels={'quantity_sold':'Actual units sold','date':''}),width='stretch')
     st.subheader('Action queue');table(reorders.sort_values('priority')[['product','status','priority','recommended_order','support']])
@@ -74,13 +81,36 @@ elif section=='Product Demand Forecasting':
     if future.prediction.isna().all():st.info('No supported forecast. Collect sales/availability history; customer requests alone cannot determine order quantities.')
     else:
         c=st.columns(3);c[0].metric(f'Next {h} days',f'{future.prediction.sum():.1f} units');c[1].metric('Selected model',future.method.iloc[0]);c[2].metric('Data support',future.support.iloc[0])
-        fig=go.Figure();fig.add_trace(go.Scatter(x=actual.date,y=actual.quantity_sold,name='Recorded sales',line=dict(color='#778995')));fig.add_trace(go.Scatter(x=future.date,y=future.prediction,name='Forecast',line=dict(color='#087e8b',dash='dash')));fig.update_layout(yaxis_title='Units / day',legend=dict(orientation='h'));st.plotly_chart(fig,width='stretch')
+        fig=go.Figure();fig.add_trace(go.Scatter(x=actual.date,y=actual.quantity_sold,name='Recorded sales',line=dict(color='#778995')));fig.add_trace(go.Scatter(x=future.date,y=future.prediction,name='Forecast',line=dict(color='#087e8b',dash='dash')));
+        for event in t['festivals'][t['festivals'].festival_date.between(as_of+pd.Timedelta(days=1),as_of+pd.Timedelta(days=h))].itertuples():
+            fig.add_shape(type='line',x0=event.festival_date,x1=event.festival_date,y0=0,y1=1,yref='paper',line=dict(color='#c46238',dash='dot'))
+            fig.add_annotation(x=event.festival_date,y=1,yref='paper',text=event.festival_name,showarrow=False,textangle=-45)
+        fig.update_layout(yaxis_title='Units / day',legend=dict(orientation='h'));st.plotly_chart(fig,width='stretch')
         st.caption('Point forecasts, not guarantees. Support labels reflect recent observed history, not calibrated probabilities. Recorded sales can be censored by stockouts.')
-    st.subheader('Chronological model evaluation')
-    if report:
-        metrics=pd.DataFrame(report['results']);table(metrics[(metrics.horizon==h)&(metrics.n>0)])
-        st.caption(report['selection']+' '+report['limitations'])
-    else:st.info('No evaluation for this snapshot yet. Run evaluation in Data Management. Demo metrics are not applied to uploaded data.')
+    st.subheader('Seasons and events included in this forecast')
+    if future.method.eq(SEASONAL_METHOD).any():
+        st.write('One demand forecast feeds purchasing and expiry planning. Annual patterns, weekdays, trend and dated festivals are learned together; no extra seasonal forecast or manual festival multiplier is added.')
+    else:
+        st.write('One demand forecast feeds purchasing and expiry planning. The selected method is shown above and in the forecast table. Baselines do not learn annual or festival effects; the calendar below is context. Run snapshot evaluation to compare seasonal models when sufficient history is available.')
+    st.caption('Calendar period: '+', '.join(dict.fromkeys(future.date.map(season_label)))+'. These labels are broad Indian calendar groupings, not local weather observations.')
+    events=t['festivals'][t['festivals'].festival_date.between(as_of+pd.Timedelta(days=1),as_of+pd.Timedelta(days=h+7))].sort_values('festival_date')
+    if events.empty:st.info('No imported festival falls in this forecast or its seven-day preparation window.')
+    else:table(events)
+    with st.expander('Historical seasonal evidence (observations, not another forecast)'):
+        profile=seasonal_profile(t,pid)
+        if profile.empty:st.info('No sales history to estimate seasonality.')
+        else:st.plotly_chart(px.bar(profile,x='month',y='mean_daily',labels={'mean_daily':'Observed mean units/day','month':'Calendar month'}),width='stretch')
+        st.caption('Historical monthly averages may mix trends, stockouts and event effects. This chart is not a second prediction.')
+        table(festival_evidence(t,pid))
+    with st.expander('Forecast accuracy across seasons and products'):
+        if report:
+            scores=pd.DataFrame(report['results']);table(scores[(scores.horizon==h)&(scores.n>0)])
+            if report.get('by_season'):
+                st.write('Season-by-season test results (30-day windows)');table(pd.DataFrame(report['by_season']))
+                st.write('Selected product: same-data model comparison');table(pd.DataFrame(report['by_product']).query('product_id == @pid'))
+                st.write('Festival preparation windows versus ordinary days');table(pd.DataFrame(report['by_event_window']))
+            st.caption(report['selection']+' '+report['limitations'])
+        else:st.info('No evaluation for this snapshot yet. Run evaluation in Data Management. Demo metrics are not applied to uploaded data.')
     table(future);st.download_button('Download forecast CSV',safe_csv(future),'forecast.csv','text/csv')
 elif section=='Smart Reorder Planner':
     st.write('Review the demand, eligible stock, timed receipts and constraints behind each draft quantity.')
@@ -88,13 +118,6 @@ elif section=='Smart Reorder Planner':
     pid=product_picker('reorder_product');row=reorders[reorders.product_id==pid].iloc[0];st.info(row.reason)
     st.caption('Protection = lead time + review period. Target = cumulative forecast + safety buffer. Net need includes backorders and simulated expiry loss. New receipt life, storage, MOQ and pack constraints can reduce the draft. Unknown expiry blocks ordering. Longer-than-30-day protection needs manual planning.')
     table(reorders[reorders.product_id==pid]);st.download_button('Download purchasing review CSV',safe_csv(reorders),'purchasing_review.csv','text/csv')
-elif section=='Seasonal and Festival Intelligence':
-    pid=product_picker('season_product');profile=seasonal_profile(t,pid)
-    if profile.empty:st.info('No sales history to estimate seasonality.')
-    else:st.plotly_chart(px.bar(profile,x='month',y='mean_daily',labels={'mean_daily':'Observed mean units/day','month':'Calendar month'}),width='stretch')
-    st.caption('Monthly profile excludes known stockouts. It mixes years and trends; it is descriptive, not proof of a causal seasonal effect.')
-    table(festival_evidence(t,pid));table(t['festivals'][t['festivals'].festival_date>as_of].sort_values('festival_date').head(10))
-    st.write('Event comparison: seven pre-event days versus the prior 28 days. At least two adequately observed occurrences are needed. The forecast learns event proximity; this table never applies an additional multiplier.')
 elif section=='Expiry Management':
     st.write('Recorded batch dates determine eligibility. Forecasts estimate unsold quantities; they never invent official expiry dates.')
     if batches.empty:st.info('No batch records supplied.')
@@ -117,6 +140,16 @@ elif section=='Review Intelligence':
     st.caption('English keyword baseline with longest alias match and limited negation handling. Supplied product IDs are input assertions. Mixed-product reviews, sarcasm and other languages require human review.')
     st.download_button('Download review signals',safe_csv(signals),'review_signals.csv','text/csv')
 else:
+    st.subheader('Google Calendar festival dates')
+    calendar_table,calendar_meta=load_holiday_snapshot()
+    st.write(f"Imported {len(calendar_table)} public holiday entries for 2024–2027 from Holidays in India on {calendar_meta['retrieved_on']}. This app uses the imported snapshot, not a continuous Google Calendar connection.")
+    st.caption('Only public festival dates were imported. Refresh through the connected Calendar assistant or replace festivals.csv with a newer export. Private appointments are not used.')
+    with st.expander('Inspect imported dates and source links'):table(calendar_table)
+    st.download_button('Download Google Calendar festival CSV',safe_csv(calendar_table),'google_calendar_festivals.csv','text/csv')
+    if st.button('Apply imported Google Calendar dates to this snapshot'):
+        new={k:serializable(v) for k,v in t.items()};new['festivals']=serializable(calendar_table)
+        reset(validate(new),'Snapshot with Google Calendar dates');st.rerun()
+    st.caption('Applying a calendar changes model inputs and clears previous evaluation. It never rewrites uploaded sales. If sales were simulated using different dates, regenerate that simulation separately.')
     st.subheader('Snapshot and schemas');st.write('Upload all six CSVs together. Validation succeeds for the whole snapshot or leaves the current data intact. Snapshot date is the latest sales date. Download templates below.')
     with st.form('snapshot_upload'):
         files={name:st.file_uploader(name+'.csv',type='csv',max_upload_size=10,key='upload_'+name) for name in SCHEMAS}

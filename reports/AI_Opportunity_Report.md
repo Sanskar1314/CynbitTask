@@ -58,13 +58,13 @@ The proposed combination is transparent forecast selection, expiry-aware batch s
 
 ## Prototype scope and measured evidence
 
-Implemented: synthetic data generation, schema checks, three forecasting candidates, chronological evaluation, FEFO expiry simulation, periodic-review quantities, receipt-life/storage caps, descriptive seasonal/event analysis, English review rules, eight dashboard sections, CSV export/import and SQLite persistence.
+Implemented: synthetic data generation, schema checks, four forecasting candidates, chronological evaluation, FEFO expiry simulation, periodic-review quantities, receipt-life/storage caps, descriptive seasonal/event analysis, English review rules, seven dashboard sections, CSV export/import and SQLite persistence.
 
-Measured on synthetic held-out uncensored product-days: boosting MAE 2.975, RMSE 4.064, WAPE 22.248%, signed bias -0.163. Moving-average MAE is 3.599. The 17.3% relative MAE reduction is simulation-only and is not business ROI. No-history products receive no exact demand forecast.
+Measured on 4,201 synthetic uncensored product-days across 360 rolling test days: seasonal Poisson MAE 2.884, RMSE 3.958, WAPE 18.673%, bias -0.052. On the same revised data, boosting MAE is 2.990 and moving-average MAE is 3.389. The 3.5% and 14.9% respective reductions are simulation-only, not business ROI. No-history products receive no exact demand forecast.
 
 ## Risks and limitations
 
-Data readiness is the largest adoption risk. Sales censored by stockouts and missing batch labels distort recommendations. Festivals vary by region and year; the bundled calendar is a fictional scenario, not an official calendar. Review rules can misread negation, languages and multi-product text. Model selection is pooled across products and may conceal weak SKUs. There is no authenticated multi-tenant deployment, supported Revio API, purchase execution or calibrated service guarantee.
+Data readiness is the largest adoption risk. Sales censored by stockouts and missing batch labels distort recommendations. Festivals vary by region and year; the public Google Calendar snapshot was imported retrospectively and is not continuously synchronized. Regional differences and tentative dates require review. Review rules can misread negation, languages and multi-product text. Model selection is pooled across products and may conceal weak SKUs. There is no authenticated multi-tenant deployment, supported Revio API, purchase execution or calibrated service guarantee.
 
 ## Production roadmap and investment gates
 

@@ -1,0 +1,284 @@
+{
+  "selected_method": "HistGradientBoosting",
+  "selection": "Lowest pooled MAE on three 30-day validation windows; final 30 days untouched by selection.",
+  "as_of": "2026-10-16",
+  "validation_origins": [
+    "2026-06-18",
+    "2026-07-18",
+    "2026-08-17"
+  ],
+  "test_origin": "2026-09-16",
+  "results": [
+    {
+      "split": "test",
+      "method": "HistGradientBoosting",
+      "horizon": 7,
+      "n": 83,
+      "mae": 2.999052391504362,
+      "rmse": 4.074835674736004,
+      "wape_pct": 23.133954321083834,
+      "bias": -0.0015025403300903833
+    },
+    {
+      "split": "test",
+      "method": "HistGradientBoosting",
+      "horizon": 14,
+      "n": 165,
+      "mae": 2.7993006787961083,
+      "rmse": 3.76839028110232,
+      "wape_pct": 20.909217383492887,
+      "bias": -0.08746980760585112
+    },
+    {
+      "split": "test",
+      "method": "HistGradientBoosting",
+      "horizon": 30,
+      "n": 353,
+      "mae": 2.9754290970930493,
+      "rmse": 4.064365183766827,
+      "wape_pct": 22.24796592403826,
+      "bias": -0.16330400274366588
+    },
+    {
+      "split": "test",
+      "method": "Insufficient history",
+      "horizon": 7,
+      "n": 0,
+      "mae": null,
+      "rmse": null,
+      "wape_pct": null,
+      "bias": null
+    },
+    {
+      "split": "test",
+      "method": "Insufficient history",
+      "horizon": 14,
+      "n": 0,
+      "mae": null,
+      "rmse": null,
+      "wape_pct": null,
+      "bias": null
+    },
+    {
+      "split": "test",
+      "method": "Insufficient history",
+      "horizon": 30,
+      "n": 0,
+      "mae": null,
+      "rmse": null,
+      "wape_pct": null,
+      "bias": null
+    },
+    {
+      "split": "test",
+      "method": "Moving average 28d",
+      "horizon": 7,
+      "n": 83,
+      "mae": 3.204914897685981,
+      "rmse": 4.41420821050961,
+      "wape_pct": 24.721927184752456,
+      "bias": 0.8600259624356013
+    },
+    {
+      "split": "test",
+      "method": "Moving average 28d",
+      "horizon": 14,
+      "n": 165,
+      "mae": 3.302361275088548,
+      "rmse": 4.462079405292032,
+      "wape_pct": 24.666799927098708,
+      "bias": 0.4881032547699218
+    },
+    {
+      "split": "test",
+      "method": "Moving average 28d",
+      "horizon": 30,
+      "n": 353,
+      "mae": 3.5987972262759795,
+      "rmse": 4.856040643238787,
+      "wape_pct": 26.909032426931173,
+      "bias": 0.5160447044299739
+    },
+    {
+      "split": "test",
+      "method": "Weekly seasonal naive",
+      "horizon": 7,
+      "n": 83,
+      "mae": 3.8702081051478645,
+      "rmse": 5.279542466424948,
+      "wape_pct": 29.853835755322745,
+      "bias": 0.2316538882803943
+    },
+    {
+      "split": "test",
+      "method": "Weekly seasonal naive",
+      "horizon": 14,
+      "n": 165,
+      "mae": 3.8922865013774106,
+      "rmse": 5.268837027878743,
+      "wape_pct": 29.07321288941932,
+      "bias": -0.1440771349862259
+    },
+    {
+      "split": "test",
+      "method": "Weekly seasonal naive",
+      "horizon": 30,
+      "n": 353,
+      "mae": 4.094128251352047,
+      "rmse": 5.455951509908048,
+      "wape_pct": 30.612736130634882,
+      "bias": -0.18091681689415404
+    },
+    {
+      "split": "validation",
+      "method": "HistGradientBoosting",
+      "horizon": 7,
+      "n": 248,
+      "mae": 3.1238190768099576,
+      "rmse": 4.2537264934758925,
+      "wape_pct": 19.280914162490532,
+      "bias": -0.7447130229224128
+    },
+    {
+      "split": "validation",
+      "method": "HistGradientBoosting",
+      "horizon": 14,
+      "n": 495,
+      "mae": 3.0720381167804667,
+      "rmse": 4.23147367685617,
+      "wape_pct": 19.388739867478403,
+      "bias": -0.49757739215637337
+    },
+    {
+      "split": "validation",
+      "method": "HistGradientBoosting",
+      "horizon": 30,
+      "n": 1050,
+      "mae": 3.1005614939943342,
+      "rmse": 4.223884804672293,
+      "wape_pct": 20.119829236104387,
+      "bias": -0.3526963482352484
+    },
+    {
+      "split": "validation",
+      "method": "Insufficient history",
+      "horizon": 7,
+      "n": 0,
+      "mae": null,
+      "rmse": null,
+      "wape_pct": null,
+      "bias": null
+    },
+    {
+      "split": "validation",
+      "method": "Insufficient history",
+      "horizon": 14,
+      "n": 0,
+      "mae": null,
+      "rmse": null,
+      "wape_pct": null,
+      "bias": null
+    },
+    {
+      "split": "validation",
+      "method": "Insufficient history",
+      "horizon": 30,
+      "n": 0,
+      "mae": null,
+      "rmse": null,
+      "wape_pct": null,
+      "bias": null
+    },
+    {
+      "split": "validation",
+      "method": "Moving average 28d",
+      "horizon": 7,
+      "n": 248,
+      "mae": 3.3112268125510904,
+      "rmse": 4.523918750022535,
+      "wape_pct": 20.437636871893243,
+      "bias": 0.44020896775990165
+    },
+    {
+      "split": "validation",
+      "method": "Moving average 28d",
+      "horizon": 14,
+      "n": 495,
+      "mae": 3.3611514757713583,
+      "rmse": 4.684836431251846,
+      "wape_pct": 21.2134384866355,
+      "bias": 0.8186195229937923
+    },
+    {
+      "split": "validation",
+      "method": "Moving average 28d",
+      "horizon": 30,
+      "n": 1050,
+      "mae": 3.639303719616501,
+      "rmse": 5.084684965779712,
+      "wape_pct": 23.61577718062744,
+      "bias": 1.2649068279163518
+    },
+    {
+      "split": "validation",
+      "method": "Weekly seasonal naive",
+      "horizon": 7,
+      "n": 248,
+      "mae": 4.2353093755895115,
+      "rmse": 5.866456115547596,
+      "wape_pct": 26.141282358043778,
+      "bias": -0.3917993909504945
+    },
+    {
+      "split": "validation",
+      "method": "Weekly seasonal naive",
+      "horizon": 14,
+      "n": 495,
+      "mae": 4.4173793068529905,
+      "rmse": 6.181048751741743,
+      "wape_pct": 27.87967304465422,
+      "bias": -0.01757170704539129
+    },
+    {
+      "split": "validation",
+      "method": "Weekly seasonal naive",
+      "horizon": 30,
+      "n": 1050,
+      "mae": 4.43463261327923,
+      "rmse": 6.1591598498031574,
+      "wape_pct": 28.776739657272053,
+      "bias": 0.4351935394040657
+    }
+  ],
+  "synthetic_latent_test": {
+    "HistGradientBoosting": {
+      "n": 360,
+      "mae": 2.979290940995781,
+      "rmse": 4.053600993661003,
+      "wape_pct": 22.424100747616162,
+      "bias": -0.2218460568143018
+    },
+    "Insufficient history": {
+      "n": 0,
+      "mae": null,
+      "rmse": null,
+      "wape_pct": null,
+      "bias": null
+    },
+    "Moving average 28d": {
+      "n": 360,
+      "mae": 3.599401421623644,
+      "rmse": 4.838855463340768,
+      "wape_pct": 27.091459581528575,
+      "bias": 0.4354296937630274
+    },
+    "Weekly seasonal naive": {
+      "n": 360,
+      "mae": 4.086994949494949,
+      "rmse": 5.433275553614593,
+      "wape_pct": 30.76140877729838,
+      "bias": -0.24987373737373741
+    }
+  },
+  "limitations": "Synthetic single-store data; observed metric excludes censored days and can be optimistic. Latent metric is simulation-only, unavailable in real shops. No calibrated intervals or real-world business impact measured."
+}

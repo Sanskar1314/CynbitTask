@@ -1,32 +1,25 @@
 # StockSense project state
 
-Updated2026-10-17. Core proof of concept and assessment documentation complete. Final QA passed; ready for user review.
+Updated 2026-10-17, revision2. User requested one season-aware demand forecast and actual Google Calendar festival dates.
 
-## Completed
+## Implemented
 
-- Prior prototype safely replaced; history recoverable at14df7c7b28cdee253171e5a78c663656bab5d557. Unrelated .DS_Store remains modified and untouched.
-- Reverified Cynbit public positioning; no claim of missing private inventory capability or live integration.
-- Synthetic seed42 six-table dataset, validation, censor-aware summaries and explicit SQLite persistence.
-- Global direct HistGradientBoosting,28-day mean and weekly seasonal naive; three chronological validation folds and final30-day test.
-- FEFO batch simulation, dated receipts, periodic-review decisions, expiry/overstock and pack/MOQ/storage/receipt-life caps.
-- Seasonal/event evidence and qualitative English review intelligence.
-- Eight-section Streamlit dashboard, atomic uploads, safe named CSV exports, local persistence and uploaded-snapshot evaluation.
-- Opportunity report, technical report, complete explanation, decision log, walkthrough,40 interview questions and three PDFs, visually verified.
+- Per-product Poisson count regression jointly learns smooth annual patterns, weekdays, trend and festival preparation windows. Original boosting and two simple baselines remain comparators. Sparse annual history falls back explicitly; no-history products remain unsupported.
+- Public Holidays in India snapshot imported via connected Google Calendar:28 selected dates2024–2027. No personal appointments read. App uses a saved snapshot, not continuous synchronization; Data Management supports inspect/download/apply.
+- Synthetic demo regenerated with the same seed and actual calendar dates. No uploaded or saved user sales rewritten. Old v1 metrics archived; old data available in Git.
+- Seven UI sections. Seasonal/event evidence is inside Product Demand Forecasting, with one future demand line and event markers. Same forecast feeds inventory planning.
+- Existing FEFO, receipt timing, reorder constraints, reviews, atomic uploads and local SQLite behavior retained.
 
-## Verification
+## Measured verification
 
-19 pytest tests passed, including all eight UI sections. Actual browser six-file upload succeeded; uploaded data correctly uses baseline pending its own evaluation. Old server restarted to clear obsolete imports. New local server127.0.0.1:8501 renders actual data/charts. `pip check`: no broken requirements. All23 final PDF pages inspected via rendered contact sheets.
+25 pytest tests pass. Full evaluation executed: four validation origins choose seasonal Poisson by MAE3.088 vs boosting3.117. Twelve later disjoint30-day windows span360 test days. Observed synthetic n4,201: MAE2.884, RMSE3.958, WAPE18.673%, bias-0.052. Same-data boosting MAE2.990, average3.389. Relative reductions3.5% and14.9%; all four broad season groups improve, not every SKU. No merchant accuracy or ROI established. Calendar retrieval is retrospective, not a historical point-in-time feed.
 
-Model: HistGradientBoostingRegressor90 iterations,15 leaves,.08 learning rate,L2=2,seed42,early_stopping=False,categorical product index. Selected by validation MAE3.101 vs3.639 moving average. Held-out synthetic observed MAE2.975,RMSE4.064,WAPE22.248%,bias-0.163,n353. Latent diagnostic is separate. Full artifacts in evaluation/.
+## Completion work
 
-## Git and authorization
+Finalize browser rendering, refresh PDFs and record final QA. Local app http://127.0.0.1:8501/. README includes launch/evaluation commands. User .DS_Store change preserved and excluded from commits.
 
-Repository https://github.com/Sanskar1314/CynbitTask.git, branch main; existing public visibility unchanged. Last verified pushed commit before current milestone: f0eb380302e38dfefcbce5010a19bcf5af3350ea. Earlier core commit afca596ddc7cc5c470483a47fa2d237659e15e3d. Automatic approval briefly hit a usage-limit service error; retry after resume succeeded. Do not force push, publish application, submit assessment, contact recruiters or change visibility.
+## Git and boundaries
 
-## Handoff and recovery
+Repository https://github.com/Sanskar1314/CynbitTask.git, main. Previous verified milestone7c002fece1d6c32bf113fa759c4c1bf4ff9385d0. Commit meaningful milestones, push immediately, verify remote HEAD; no force push. No public deployment, assessment submission, recruiter contact or visibility changes authorized. Logs record previous hashes to avoid recursion.
 
-No required implementation remains. Final milestone contains the imported-review provenance fix,10MB UI upload limit,extra inventory regression tests and dashboard screenshot. Read current Git HEAD and compare origin/main to verify the final milestone; logs record the previous commit to avoid recursive commits. Last executed suite:19 passed. Final PDFs: opportunity5,technical6,complete explanation12 pages; all visually inspected. Temporary PDF renders and obsolete prior-prototype render artifacts removed. Local app remains running at http://127.0.0.1:8501/. README contains installation, launch, evaluation and interview demo instructions. No known failing tests.
-
-## Boundaries and next research
-
-Synthetic single-store data; fictional festival scenario; no live Revio/POS; English rules; uncalibrated forecasts/safety; capped30-day horizon; no production auth or automatic orders. Production requires real-data reconciliation, verified local calendar, supported integrations and shadow-policy evaluation. Deadline supplied18 October2026 at03:48; official timezone unverified, Asia/Kolkata planning assumption.
+Production requires consented real data, regional calendar maintenance, supported POS/Revio integration, shadow-policy evaluation, authenticated tenant separation and calibrated uncertainty. Current synthetic single-store results do not establish production readiness.

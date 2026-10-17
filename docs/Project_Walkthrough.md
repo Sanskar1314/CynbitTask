@@ -10,10 +10,12 @@ This separation makes errors easier to understand. If demand is wrong, inspect t
 
 | Path | Purpose |
 |---|---|
-| app/app.py | Eight-section Streamlit UI, session state and cached computation |
+| app/app.py | Seven-section Streamlit UI, session state and cached computation |
 | src/data.py | Six-table validation, CSV handling, demand masking, summaries, SQLite |
 | src/forecasting.py | Origin-only features, training, prediction, metrics, chronological evaluation |
 | src/inventory.py | Periodic policy, constrained rounding, daily FEFO, explanations |
+| src/seasonal_model.py | Per-product joint seasonal, trend, weekday and festival count model |
+| src/calendar_data.py | Public calendar snapshot normalization and provenance |
 | src/seasonality.py | Monthly profile and comparable event windows |
 | src/reviews.py | Product alias and English intent rules |
 | scripts/generate_data.py | Seeded synthetic ledger and snapshot generator |
@@ -37,7 +39,7 @@ Suppose a shelf begins with three bottles and sells all three. Actual demand cou
 
 This is a pragmatic baseline, not a complete censored-demand estimator. Discarding constrained days may select unusually quiet days and underestimate demand. The generator records latent demand so evaluation can illustrate that issue, but production data cannot supply it directly.
 
-## What a model training row means
+## Legacy boosting comparator training rows
 
 Take an origin at the end of18 June2026 and a target seven days later. History features use observations no later than18 June. The target weekday/month and event proximity are known calendar features for25 June. The target is observed uncensored sales on25 June. A training cutoff earlier than25 June would forbid this row.
 
@@ -45,17 +47,17 @@ Take an origin at the end of18 June2026 and a target seven days later. History f
 
 No recursive prediction loop feeds yesterday's prediction into today's lag. This is direct multi-horizon regression: every horizon uses the same known origin history plus that horizon's calendar features. The tradeoff is more training rows and an explicit maximum30-day planning horizon.
 
-## Why there are three predictors
+## Why there are four predictors
 
-A model is useful only if it improves a credible simple approach. A28-day average and weekly seasonal naive forecast are cheap, understandable benchmarks. The three validation windows select the lowest pooled MAE. The final test window reports honest unseen performance. The selected gradient-boosted model is then refitted on all available historical data for the next30 days.
+A model is useful only if it improves a credible simple approach. A28-day average and weekly seasonal naive forecast are cheap, understandable benchmarks. Four validation windows select the lowest pooled MAE. Twelve later 30-day rolling test windows span 360 days. Seasonal Poisson regression wins selection and jointly fits each product’s smooth annual curve, weekdays, trend and dated festival effects. It is refitted on available history for the next30 days. With less than a full annual span it falls back to the average; without adequate recent history it withholds predictions.
 
 For uploaded data, demo results are irrelevant. The UI starts with the moving average. Running that snapshot's chronological evaluation selects a method for that snapshot. Very short histories cannot support the full evaluation protocol. Point forecasts have data-support labels, not claimed confidence intervals.
 
 ## How to read the measured results
 
-The selected model's final observed test MAE2.975 means its average absolute daily error per evaluated SKU is about three units. WAPE22.248% aggregates absolute errors relative to total actual units; it is not classification accuracy. Bias-0.163 means a small average underprediction on this synthetic test. RMSE4.064 gives more weight to larger errors.
+The selected seasonal model has rolling test MAE2.884, RMSE3.958, WAPE18.673% and bias-0.052. MAE is average absolute daily error in units; WAPE is aggregate numerical error, not classification accuracy.
 
-The moving-average MAE is3.599. Relative MAE reduction is about17.3%, but only on this simulation. There are353 evaluated product-days; seven stocked-product days are censored. The thirteenth SKU has no history and is excluded. The separate latent simulation diagnostic includes360 stocked-product days.
+The same-data boosting MAE is2.990 and average MAE3.389: relative improvements of3.5% and14.9%. There are4,201 observed product-days across360 test days. All four broad seasons improve, but not every SKU. The no-history SKU is excluded. Latent simulation diagnostics are separate. Old v1 metrics use different dates and a shorter protocol, so cannot be compared directly.
 
 ## Walk through the inventory engine
 
@@ -73,7 +75,7 @@ Eighty yogurt units expire after five future sellable days. Demand6/day consumes
 
 ## Seasons, events and reviews
 
-The monthly chart shows historical observed means, which can reflect seasonality and trend together. The event table compares pre-event demand against a preceding baseline and requires multiple adequately observed occurrences. It does not prove a festival caused demand growth. The bundled dates are fictional scenario entries and must be replaced for real use.
+The monthly chart shows historical observed means, which can reflect seasonality and trend together. The event table compares pre-event demand against a preceding baseline and requires multiple adequately observed occurrences. It does not prove a festival caused demand growth. The actual dates are imported public Google Calendar entries, with provenance in Data Management. This is a snapshot, not continuous synchronization. Seasonal evidence sits inside Product Demand Forecasting; there is one combined forecast.
 
 The review rule pipeline finds long catalog aliases first. A request for sugar-free cola maps to that SKU instead of ordinary cola. Availability, variant and quality intents can coexist. Evidence and original text remain visible. A no-history variant gets an investigation recommendation, not a fabricated forecast. The model never receives review counts.
 

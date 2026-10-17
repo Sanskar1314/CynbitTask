@@ -1,29 +1,29 @@
-festival_name,festival_date,region,calendar_source
-Holi,2024-03-15,Demo region,Synthetic scenario; replace with verified local dates
-Eid,2024-04-10,Demo region,Synthetic scenario; replace with verified local dates
-Raksha Bandhan,2024-08-20,Demo region,Synthetic scenario; replace with verified local dates
-Navratri,2024-10-01,Demo region,Synthetic scenario; replace with verified local dates
-Dussehra,2024-10-10,Demo region,Synthetic scenario; replace with verified local dates
-Diwali,2024-11-08,Demo region,Synthetic scenario; replace with verified local dates
-Christmas,2024-12-25,Demo region,Synthetic scenario; replace with verified local dates
-Holi,2025-03-15,Demo region,Synthetic scenario; replace with verified local dates
-Eid,2025-04-10,Demo region,Synthetic scenario; replace with verified local dates
-Raksha Bandhan,2025-08-20,Demo region,Synthetic scenario; replace with verified local dates
-Navratri,2025-10-01,Demo region,Synthetic scenario; replace with verified local dates
-Dussehra,2025-10-10,Demo region,Synthetic scenario; replace with verified local dates
-Diwali,2025-11-08,Demo region,Synthetic scenario; replace with verified local dates
-Christmas,2025-12-25,Demo region,Synthetic scenario; replace with verified local dates
-Holi,2026-03-15,Demo region,Synthetic scenario; replace with verified local dates
-Eid,2026-04-10,Demo region,Synthetic scenario; replace with verified local dates
-Raksha Bandhan,2026-08-20,Demo region,Synthetic scenario; replace with verified local dates
-Navratri,2026-10-01,Demo region,Synthetic scenario; replace with verified local dates
-Dussehra,2026-10-10,Demo region,Synthetic scenario; replace with verified local dates
-Diwali,2026-11-08,Demo region,Synthetic scenario; replace with verified local dates
-Christmas,2026-12-25,Demo region,Synthetic scenario; replace with verified local dates
-Holi,2027-03-15,Demo region,Synthetic scenario; replace with verified local dates
-Eid,2027-04-10,Demo region,Synthetic scenario; replace with verified local dates
-Raksha Bandhan,2027-08-20,Demo region,Synthetic scenario; replace with verified local dates
-Navratri,2027-10-01,Demo region,Synthetic scenario; replace with verified local dates
-Dussehra,2027-10-10,Demo region,Synthetic scenario; replace with verified local dates
-Diwali,2027-11-08,Demo region,Synthetic scenario; replace with verified local dates
-Christmas,2027-12-25,Demo region,Synthetic scenario; replace with verified local dates
+festival_name,festival_date,region,calendar_source,source_title,source_url,date_status
+Holi,2024-03-25,India,Google Calendar: Holidays in India (imported 2026-10-17),Holi,https://www.google.com/calendar/event?eid=MjAyNDAzMjVfbzVhc3AzODMzbDZlcHBobm9vYTVlZzQ4NXMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Eid al-Fitr,2024-04-11,India,Google Calendar: Holidays in India (imported 2026-10-17),Ramzan Id,https://www.google.com/calendar/event?eid=MjAyNDA0MTFfcHB2amgzMnQ0ZGlpdHVvY2FrOGNuYWFoY3MgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Raksha Bandhan,2024-08-19,India,Google Calendar: Holidays in India (imported 2026-10-17),Raksha Bandhan,https://www.google.com/calendar/event?eid=MjAyNDA4MTlfZWF2c2Yycm1qc2hyZXRoYXM4NGRxdnBydGMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Navratri,2024-10-03,India,Google Calendar: Holidays in India (imported 2026-10-17),First Day of Sharad Navratri,https://www.google.com/calendar/event?eid=MjAyNDEwMDNfbDYwOXQ2MXA2NGlxN3B2MTlpYmhycWQzZDggZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Dussehra,2024-10-12,India,Google Calendar: Holidays in India (imported 2026-10-17),Dussehra,https://www.google.com/calendar/event?eid=MjAyNDEwMTJfaWQ1NDBtdjc0dWxkZWZrZmdqbnE5YnU5YTAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Diwali,2024-10-31,India,Google Calendar: Holidays in India (imported 2026-10-17),Diwali/Deepavali,https://www.google.com/calendar/event?eid=MjAyNDEwMzFfazU1N3J1Y3BvdjdxNDRraTlua2d1aWthaHMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Christmas,2024-12-25,India,Google Calendar: Holidays in India (imported 2026-10-17),Christmas,https://www.google.com/calendar/event?eid=MjAyNDEyMjVfYm8wMmJxMTM2N21ldWJjNjluOWs5aGY3ZjAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Holi,2025-03-14,India,Google Calendar: Holidays in India (imported 2026-10-17),Holi,https://www.google.com/calendar/event?eid=MjAyNTAzMTRfcG5yaGRqaDdyMHJhNWI0bG9zbjU3bGdpcXMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Eid al-Fitr,2025-03-31,India,Google Calendar: Holidays in India (imported 2026-10-17),Ramzan Id,https://www.google.com/calendar/event?eid=MjAyNTAzMzFfZWlucnNpajQxZjdxb2tocTZjYWcwMGtiNnMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Raksha Bandhan,2025-08-09,India,Google Calendar: Holidays in India (imported 2026-10-17),Raksha Bandhan,https://www.google.com/calendar/event?eid=MjAyNTA4MDlfdGxrYWg3cW80OHYxbXZ2MjlpbW5sNGNpamMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Navratri,2025-09-22,India,Google Calendar: Holidays in India (imported 2026-10-17),First Day of Sharad Navratri,https://www.google.com/calendar/event?eid=MjAyNTA5MjJfcXVmc3A0YmEycm5tcmR2YjdqcWNlZmdhOWMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Dussehra,2025-10-02,India,Google Calendar: Holidays in India (imported 2026-10-17),Dussehra,https://www.google.com/calendar/event?eid=MjAyNTEwMDJfaXB2bWdpNGQ0dTRjbTgyOW4yMDh0MmhoZTggZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Diwali,2025-10-20,India,Google Calendar: Holidays in India (imported 2026-10-17),Diwali/Deepavali,https://www.google.com/calendar/event?eid=MjAyNTEwMjBfbTIyNTNidmVya3BxZW9wcTNjbmgzYmhiMTggZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Christmas,2025-12-25,India,Google Calendar: Holidays in India (imported 2026-10-17),Christmas,https://www.google.com/calendar/event?eid=MjAyNTEyMjVfOWZoMzJsaGxhbjg1bGs5MzEzMmM4bjNtdDAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Holi,2026-03-04,India,Google Calendar: Holidays in India (imported 2026-10-17),Holi,https://www.google.com/calendar/event?eid=MjAyNjAzMDRfYmZ1NTh1aWRjMnJpcjdjdGJ0Ym9rcXE2YWsgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Eid al-Fitr,2026-03-21,India,Google Calendar: Holidays in India (imported 2026-10-17),Ramzan Id,https://www.google.com/calendar/event?eid=MjAyNjAzMjFfdDVjdjVtZG5nNGJkMGJ0YnNmN2ZpZTZoODAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Raksha Bandhan,2026-08-28,India,Google Calendar: Holidays in India (imported 2026-10-17),Raksha Bandhan,https://www.google.com/calendar/event?eid=MjAyNjA4MjhfZmJxODFnaXY5dGlqNzMwZjVmbHI1aHB1YWMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Navratri,2026-10-11,India,Google Calendar: Holidays in India (imported 2026-10-17),First Day of Sharad Navratri,https://www.google.com/calendar/event?eid=MjAyNjEwMTFfMWljaW9sbjE0Mmp1ZGxrY2ZiaGEzcGpkcGcgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Dussehra,2026-10-20,India,Google Calendar: Holidays in India (imported 2026-10-17),Dussehra,https://www.google.com/calendar/event?eid=MjAyNjEwMjBfZmpwMHJiOW8zbjJyZTBvYTg5cXU0ZjRtc28gZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Diwali,2026-11-08,India,Google Calendar: Holidays in India (imported 2026-10-17),Diwali/Deepavali,https://www.google.com/calendar/event?eid=MjAyNjExMDhfbzNhZXZ2aXYxMDVzYWViZjQ3cHRjZGExNG8gZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Christmas,2026-12-25,India,Google Calendar: Holidays in India (imported 2026-10-17),Christmas,https://www.google.com/calendar/event?eid=MjAyNjEyMjVfajd0ODRnZjQzN3Z0dWU0Y2s3NWh2ZDU2bDAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Eid al-Fitr,2027-03-10,India,Google Calendar: Holidays in India (imported 2026-10-17),Ramzan Id (tentative),https://www.google.com/calendar/event?eid=MjAyNzAzMTBfMmg4OTl2aDNoOGhkb3R2NWdlYThnZXJrc2sgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,Tentative
+Holi,2027-03-22,India,Google Calendar: Holidays in India (imported 2026-10-17),Holi,https://www.google.com/calendar/event?eid=MjAyNzAzMjJfa2V1MzJzcXBtMGFrMmQ4MmJvNmdycWUzcGMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Raksha Bandhan,2027-08-17,India,Google Calendar: Holidays in India (imported 2026-10-17),Raksha Bandhan,https://www.google.com/calendar/event?eid=MjAyNzA4MTdfMHRudXBnZTZkMDM1OGFpODdhYjBydGtxaHMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Navratri,2027-09-30,India,Google Calendar: Holidays in India (imported 2026-10-17),First Day of Sharad Navratri,https://www.google.com/calendar/event?eid=MjAyNzA5MzBfNWpkNDk0bHI4bGVhaThhOWN1ZWc1b2pqdmMgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Dussehra,2027-10-09,India,Google Calendar: Holidays in India (imported 2026-10-17),Dussehra,https://www.google.com/calendar/event?eid=MjAyNzEwMDlfNGphY2w3aW02a2x0cDhhYjE5YmFlZXEyOTAgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Diwali,2027-10-29,India,Google Calendar: Holidays in India (imported 2026-10-17),Diwali/Deepavali,https://www.google.com/calendar/event?eid=MjAyNzEwMjlfbWl2NmxqcWxkOTBmYjRlYjI2djJzaDhjYjQgZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
+Christmas,2027-12-25,India,Google Calendar: Holidays in India (imported 2026-10-17),Christmas,https://www.google.com/calendar/event?eid=MjAyNzEyMjVfMHJrNTVxZGVhMzljaDAyNnE1Y2dqb3NmOW8gZW4uaW5kaWFuI2hvbGlkYXlAdg&ctz=America/Los_Angeles,As listed by calendar
