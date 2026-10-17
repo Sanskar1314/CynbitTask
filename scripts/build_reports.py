@@ -10,7 +10,7 @@ from reportlab.lib.pagesizes import A4
 ROOT=Path(__file__).resolve().parents[1]
 NAVY=colors.HexColor('#102c3a');TEAL=colors.HexColor('#087e8b');GRAY=colors.HexColor('#52636d');PALE=colors.HexColor('#edf4f5')
 styles=getSampleStyleSheet()
-styles.add(ParagraphStyle(name='BodyCustom',fontName='Helvetica',fontSize=10,leading=15,textColor=NAVY,spaceAfter=9))
+styles.add(ParagraphStyle(name='BodyCustom',fontName='Helvetica',fontSize=10,leading=14,textColor=NAVY,spaceAfter=8))
 styles.add(ParagraphStyle(name='HeadCustom',fontName='Helvetica-Bold',fontSize=16,leading=21,textColor=TEAL,spaceBefore=15,spaceAfter=8,keepWithNext=True))
 styles.add(ParagraphStyle(name='SubCustom',fontName='Helvetica-Bold',fontSize=11,leading=15,textColor=NAVY,spaceBefore=10,spaceAfter=5,keepWithNext=True))
 styles.add(ParagraphStyle(name='CellCustom',fontName='Helvetica',fontSize=8,leading=11,textColor=NAVY))

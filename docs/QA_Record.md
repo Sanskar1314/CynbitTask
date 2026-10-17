@@ -6,7 +6,9 @@
 - Forecast evaluation executed: three validation origins and final30-day test; results in evaluation/metrics.json and detailed CSV. No random split or future demand features.
 - Browser rendered StockSense charts/data after restarting an old server retaining stale imports. Narrow viewport wraps content without hiding primary actions; wide tables scroll.
 - All six sample files were selected through actual browser upload controls. Final submission verification recorded below when complete.
-- Three PDFs generated with ReportLab, reopened and rendered with PDFium; every page inspected through contact sheets. Opportunity5 pages, technical7 pages, explanation12 pages. No clipping/overlap observed. Editable Markdown retained.
+- Three PDFs generated with ReportLab, reopened and rendered with PDFium; every page inspected through contact sheets. Final layout: opportunity5 pages, technical6 pages, explanation12 pages. No clipping/overlap observed. Editable Markdown retained.
 - No external assessment submission, contact or public application deployment. Local server bound127.0.0.1:8501. Public repository visibility unchanged.
 
 Real-browser final upload: all six demo CSVs were submitted successfully in an isolated tab. The UI changed to Uploaded snapshot and explicitly selected the moving-average baseline pending snapshot-specific evaluation. Reset to demo was then exercised. The shared user tab was left separate from this test. Dependency check: no broken requirements found.
+
+Final QA: imported-review provenance corrected; UI upload limit10MB matches parser policy. Added independent high-demand/capacity and receipt-timing assertions. Final suite19 passed. Saved actual browser screenshot in assets/dashboard.png. PDF links verified structurally (five opportunity references, two technical references). Temporary renders removed after inspection.

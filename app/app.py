@@ -108,10 +108,10 @@ elif section=='Slow-Moving Inventory':
     st.caption('Excess = max(0, eligible on-hand − 30-day forecast), a review signal, not guaranteed waste. Days cover excludes unknown/expired stock but does not model future expiry. Pause purchasing where excessive; inspect condition and return/promotion rules before acting.')
 elif section=='Review Intelligence':
     st.write('Imported review text can suggest availability, assortment or quality investigations. These rules do not change numerical forecasts.')
-    review_file=st.file_uploader('Replace reviews CSV',type='csv',key='reviews_upload')
+    review_file=st.file_uploader('Replace reviews CSV',type='csv',max_upload_size=10,key='reviews_upload')
     if st.button('Validate and apply reviews',disabled=review_file is None):
         try:
-            new={k:serializable(v) for k,v in t.items()};new['reviews']=read_csv(review_file.getvalue());validated=validate(new);st.session_state.tables=validated;st.success('Review table replaced after validation.');st.rerun()
+            new={k:serializable(v) for k,v in t.items()};new['reviews']=read_csv(review_file.getvalue());validated=validate(new);st.session_state.tables=validated;st.session_state.source='Snapshot with imported reviews';st.session_state.custom_evaluation=report;st.success('Review table replaced after validation.');st.rerun()
         except ValueError as exc:st.error(str(exc))
     signals=analyze(t['reviews'],t['products']);table(signals)
     st.caption('English keyword baseline with longest alias match and limited negation handling. Supplied product IDs are input assertions. Mixed-product reviews, sarcasm and other languages require human review.')
@@ -119,7 +119,7 @@ elif section=='Review Intelligence':
 else:
     st.subheader('Snapshot and schemas');st.write('Upload all six CSVs together. Validation succeeds for the whole snapshot or leaves the current data intact. Snapshot date is the latest sales date. Download templates below.')
     with st.form('snapshot_upload'):
-        files={name:st.file_uploader(name+'.csv',type='csv',key='upload_'+name) for name in SCHEMAS}
+        files={name:st.file_uploader(name+'.csv',type='csv',max_upload_size=10,key='upload_'+name) for name in SCHEMAS}
         apply=st.form_submit_button('Validate and replace snapshot')
     if apply:
         try:

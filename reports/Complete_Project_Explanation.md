@@ -130,6 +130,14 @@ WHAT: transparent alias/English intent rules, eight Streamlit sections, atomic s
 
 WHAT: numerical unit tests plus chronological evaluation and UI integration checks. WHY: recommendation correctness and prediction quality are different questions. HOW: known numeric examples, invalid schemas, missing/expired batches, timed POs, no-history suppression, leakage checks and end-to-end app tests. ALTERNATIVES: screenshot-only testing misses math and validation failures. DECISION: tests cover business invariants; final browser inspection checks presentation. EXAMPLE: pack rounding cannot exceed safe cap. LIMITATIONS: passing synthetic tests does not validate a production retail operation.
 
+## Data design and feature construction details
+
+WHAT: A six-table synthetic snapshot, availability ledger and origin-only feature matrix. WHY: reproducibility and explicit distinction between recorded sales, unknown demand and future targets. HOW: seed42 simulates latent demand, caps sales by stock and records receipts/writeoffs; validation checks the ledger and keys. Lags and rolling statistics use only the origin's history; missing/censored dates remain NaN. ALTERNATIVES: unbounded independent random sales would contradict stock, while filling missing days with zero would invent demand evidence. DECISION: retain latent demand solely for a separate simulation diagnostic and omit it from every feature. EXAMPLE: available3 and sold3 is conservatively masked, not labelled true demand3; a future sales change leaves earlier features identical. LIMITATIONS: masking is not a full censored-demand likelihood, and the synthetic generator can favor the chosen feature family.
+
+## Persistence and frontend details
+
+WHAT: Streamlit session snapshots, content-keyed forecast caching and explicit SQLite save/load. WHY: a local assessment needs reproducible interactions without cloud infrastructure. HOW: all six tables validate before session replacement; SQLite writes a temporary database then replaces the saved file. UI upload controls and parser enforce a10MB limit. ALTERNATIVES: automatic database writes could persist accidental uploads; a hosted database would add unnecessary setup. DECISION: save only on an explicit button click and revalidate on load. EXAMPLE: an incomplete upload raises an error while the previous snapshot remains visible. LIMITATIONS: fixed local persistence is single-user; simultaneous writers, authentication and durable audit history are not addressed. Imported reviews update provenance even when numerical sales/evaluation remain unchanged.
+
 
 # Part III - Interview preparation
 

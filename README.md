@@ -39,6 +39,8 @@ Open [StockSense locally](http://127.0.0.1:8501/). This link works on the comput
 - English product/intent rules for requests, availability, variants and quality; no automatic numerical review uplift.
 - Atomic six-CSV snapshot replacement, schema feedback, CSV downloads and explicit local SQLite save/load.
 
+![StockSense executive dashboard](assets/dashboard.png)
+
 ## Architecture and stack
 
 ```mermaid

@@ -67,3 +67,18 @@ def test_review_unavailable_and_negation(tables):
     assert 'Availability complaint' in a.iloc[0].intents
     assert not r[r.review_id=='b'].intents.str.contains('Availability complaint').any()
     assert not r[r.review_id=='c'].intents.str.contains('Product request').any()
+
+def test_high_demand_low_stock_and_capacity(tables):
+    t={k:v.copy() for k,v in tables.items()};t['batches']=t['batches'][t['batches'].product_id!='P01'];t['purchase_orders']=t['purchase_orders'][t['purchase_orders'].product_id!='P01']
+    f=predict(t,t['sales'].date.max());f.loc[f.product_id=='P01','prediction']=20
+    r,_=plan(t,f);row=r.set_index('product_id').loc['P01']
+    assert row.recommended_order==252 and row.priority=='P1'
+    t['products'].loc[t['products'].product_id=='P01','max_stock']=50
+    r,_=plan(t,f);assert r.set_index('product_id').loc['P01','recommended_order']==48
+
+def test_confirmed_po_reduces_need_but_late_does_not(tables):
+    t={k:v.copy() for k,v in tables.items()};f=predict(t,t['sales'].date.max());f.loc[f.product_id=='P01','prediction']=20
+    end=t['sales'].date.max();t['purchase_orders'].loc[0,'expected_delivery_date']=end+pd.Timedelta(days=2)
+    r,_=plan(t,f);on_time=r.iloc[0].raw_order
+    t['purchase_orders'].loc[0,'expected_delivery_date']=end+pd.Timedelta(days=25)
+    r,_=plan(t,f);assert r.iloc[0].raw_order==on_time+24
