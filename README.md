@@ -1,8 +1,8 @@
-# Revio StockSense
+# Revio Invento
 
 **Demand forecasts and explainable inventory decisions for a kirana owner.**
 
-StockSense helps review what to reorder, what is overstocked, which batches may expire and which products customers request. It is an independent assessment proposal for an optional Revio-adjacent module, not an existing Cynbit product or supported integration.
+Invento helps review what to reorder, what is overstocked, which batches may expire and which products customers request. It is an independent assessment proposal for an optional Revio-adjacent module, not an existing Cynbit product or supported integration.
 
 **All bundled business data is synthetic. Festival dates come from a public Google Calendar snapshot imported on 17 October 2026; regional differences and tentative dates need review. No orders are placed and no real-store ROI is claimed.**
 
@@ -26,7 +26,7 @@ cd /Users/sanskar/Desktop/InternshipTask
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 .venv/bin/python -m streamlit run app/app.py --server.address 127.0.0.1 --server.port 8501 --server.headless true --theme.base light
 ```
 
-Open [StockSense locally](http://127.0.0.1:8501/). This link works on the computer running the server; no public deployment was created. If port8501 is occupied by the previous prototype, stop that server first. A fresh server clears stale Python imports after replacing the old project.
+Open [Invento locally](http://127.0.0.1:8501/). This link works on the computer running the server; no public deployment was created. If port8501 is occupied by the previous prototype, stop that server first. A fresh server clears stale Python imports after replacing the old project.
 
 ## What works
 
@@ -39,7 +39,7 @@ Open [StockSense locally](http://127.0.0.1:8501/). This link works on the comput
 - English product/intent rules for requests, availability, variants and quality; no automatic numerical review uplift.
 - Atomic six-CSV snapshot replacement, schema feedback, CSV downloads and explicit local SQLite save/load.
 
-![StockSense executive dashboard](assets/dashboard.png)
+![Invento executive dashboard](assets/dashboard.png)
 
 ## Architecture and stack
 

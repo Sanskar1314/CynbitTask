@@ -1,4 +1,4 @@
-"""StockSense local assessment dashboard. Run from repository root."""
+"""Invento local assessment dashboard. Run from repository root."""
 from pathlib import Path
 import sys,os,json
 os.environ.setdefault('OMP_NUM_THREADS','1');os.environ.setdefault('OPENBLAS_NUM_THREADS','1')
@@ -16,7 +16,7 @@ from src.inventory import plan
 from src.reviews import analyze
 from src.seasonality import seasonal_profile,festival_evidence
 
-st.set_page_config(page_title='Revio StockSense',page_icon='📦',layout='wide')
+st.set_page_config(page_title='Revio Invento',page_icon='📦',layout='wide')
 st.markdown('''<style>.stApp {background:#f5f7fa} h1,h2,h3 {color:#102c3a} [data-testid="stMetric"] {background:white;padding:18px;border:1px solid #dae3e8;border-radius:12px} [data-testid="stSidebar"] {background:#e8f0f2} .block-container{padding-top:2rem} </style>''',unsafe_allow_html=True)
 
 @st.cache_data(show_spinner=False,max_entries=4)
@@ -41,14 +41,14 @@ report=json.loads((ROOT/'evaluation/metrics.json').read_text()) if demo else st.
 if report and report.get('version')!=3:report=None
 method=report['selected_method'] if report else METHODS[0]
 with st.sidebar:
-    st.title('StockSense')
+    st.title('Invento')
     st.caption('Proposed Revio inventory module')
     section=st.radio('Workspace',['Executive Dashboard','Product Demand Forecasting','Smart Reorder Planner','Expiry Management','Slow-Moving Inventory','Review Intelligence','Data Management'])
     st.divider();review=st.slider('Review period (days)',1,21,7);safety=st.slider('Safety buffer (days)',0.,5.,1.5,.5)
     st.caption('Review period = days between stock checks. Safety buffer = extra demand-days held as a precaution. Draft orders need owner review.')
 
 st.title(section)
-st.caption(f"REVIO STOCKSENSE  /  {st.session_state.source}  /  Snapshot {as_of:%d %b %Y}")
+st.caption(f"REVIO INVENTO  /  {st.session_state.source}  /  Snapshot {as_of:%d %b %Y}")
 if demo:st.info('Synthetic demonstration data • No Cynbit customer records • No live Revio or POS connection')
 if t['festivals'].calendar_source.str.contains('Google Calendar',case=False).any():st.caption('Calendar source: '+ ' · '.join(t['festivals'].calendar_source.drop_duplicates().astype(str)) + '. Regional dates may differ; inspect tentative entries in the calendar table.')
 if t['festivals'].calendar_source.str.contains('synthetic',case=False).any():st.warning('Illustrative festival scenario: these are not verified religious calendar dates. Replace with a verified regional calendar before business use.')
@@ -61,7 +61,7 @@ def product_picker(key):
     ids=t['products'].product_id.tolist();names=t['products'].set_index('product_id').product_name.to_dict()
     return st.selectbox('Product',ids,format_func=lambda p:names[p],key=key)
 
-def table(frame):st.dataframe(frame,hide_index=True,width='stretch')
+def table(frame):st.dataframe(frame,hide_index=True,use_container_width=True)
 
 if section=='Executive Dashboard':
     c=st.columns(4);c[0].metric('Tracked products',len(t['products']));c[1].metric('Products needing review',int(reorders.priority.isin(['P1','P2']).sum()));c[2].metric('Draft order units',int(reorders.recommended_order.sum()));c[3].metric('Recorded inventory cost',f"₹{(t['batches'].quantity_remaining*t['batches'].cost_price).sum():,.0f}")

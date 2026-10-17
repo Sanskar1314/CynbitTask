@@ -1,1 +1,1 @@
-"""StockSense: local retail forecasting and inventory decision support."""
+"""Invento: local retail forecasting and inventory decision support."""
