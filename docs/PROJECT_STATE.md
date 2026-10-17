@@ -16,11 +16,11 @@ Updated 2026-10-17, revision3. User requested one season-aware demand forecast a
 
 ## Completion
 
-Live browser verified: seven sections, seasonal model selected, one future line with Dussehra/Diwali markers, integrated explanation and public calendar controls. Forecast/dashboard screenshots refreshed. All26 report pages rendered and visually checked (opportunity5, technical7, explanation14). Latest suite26 passed; no known failing checks. Local app http://127.0.0.1:8501/. README includes launch/evaluation commands. User .DS_Store change preserved and excluded from commits.
+Live browser verified: seven sections, seasonal model selected, one future line with Dussehra/Diwali markers, integrated explanation and public calendar controls. Forecast/dashboard screenshots refreshed. The reports have now been rewritten in simple English: opportunity7, technical8, complete guide17 pages. All32 pages were rendered and visually checked. Latest suite26 passed; no known failing checks. Local app http://127.0.0.1:8501/. README includes launch/evaluation commands. User .DS_Store change preserved and excluded from commits.
 
 ## Git and boundaries
 
-Repository https://github.com/Sanskar1314/CynbitTask.git, main. Previous verified milestone3c633e9df1550936af7023fa386f2dc2caf0cc2a. Commit meaningful milestones, push immediately, verify remote HEAD; no force push. No public deployment, assessment submission, recruiter contact or visibility changes authorized. Logs record previous hashes to avoid recursion.
+Repository https://github.com/Sanskar1314/CynbitTask.git, main. Previous verified milestonec1726fbf42824910f66a66fe26ebe22519fed240. Commit meaningful milestones, push immediately, verify remote HEAD; no force push. No public deployment, assessment submission, recruiter contact or visibility changes authorized. Logs record previous hashes to avoid recursion.
 
 Production requires consented real data, regional calendar maintenance, supported POS/Revio integration, shadow-policy evaluation, authenticated tenant separation and calibrated uncertainty. Current synthetic single-store results do not establish production readiness.
 
@@ -33,3 +33,7 @@ With only two or three occurrences per named festival, separate event coefficien
 Product checks: packaged sweets Diwali mean7.95 units/day versus4.20 on the same dates with event indicators omitted. This omitted-event value is a model diagnostic, not a second user-facing forecast or causal estimate. Tea and coffee seasonal expectations rise from October through December. Both remain within10% of their no-event values during Diwali in the synthetic no-hot-drink-festival-effect scenario. Tests cover both gifting SKUs, both hot drinks, Dussehra and Diwali. Shaded preparation windows and a summary of the same forecast clarify festival versus nonfestival days.
 
 Full evaluation rerun: seasonal model test MAE2.860 versus same-data boosting2.964, n4,200 across360 days. These values cannot demonstrate improvement over v2 because the synthetic data changed. Repeated development against this simulation is not an untouched external benchmark. Prior metrics are retained in evaluation/archive/v2.
+
+## Plain-English documentation update
+
+User asked to stop model changes and simplify the PDFs. All three reports now explain the selected model and why it was chosen, error scores without a misleading accuracy percentage, dataset dates/counts/source/limits, screens, stock terms and examples. New docs/File_Guide.md explains main files and CSV columns. Complete guide now assembles walkthrough, file guide and40 short interview answers; the historical engineering log is retained separately. App code, model, dataset, tests and evaluation artifacts are unchanged. PDF build and content/layout checks completed; no model evaluation rerun was needed for this documentation-only update.

@@ -107,7 +107,8 @@ Protection = lead time + review period. Target = cumulative demand + safety buff
 
 - [AI Opportunity Report](reports/AI_Opportunity_Report.md) / [PDF](reports/AI_Opportunity_Report.pdf): verified research, six opportunities, business fit and pilot plan.
 - [Technical Approach Report](reports/Technical_Approach_Report.md) / [PDF](reports/Technical_Approach_Report.pdf): architecture, model, evaluation and inventory mathematics.
-- [Complete Project Explanation](reports/Complete_Project_Explanation.md) / [PDF](reports/Complete_Project_Explanation.pdf): walkthrough, decisions, worked examples and40 interview questions.
+- [Complete Project Explanation](reports/Complete_Project_Explanation.md) / [PDF](reports/Complete_Project_Explanation.pdf): plain-English walkthrough, file-by-file guide, worked examples and 40 short interview answers.
+- [File Guide](docs/File_Guide.md): what each main file and CSV column means.
 - [Company Research](docs/Company_Research.md), [Engineering Decisions](docs/Engineering_Decision_Log.md), [Walkthrough](docs/Project_Walkthrough.md), [Interview Preparation](docs/Interview_Preparation.md).
 - [Project State](docs/PROJECT_STATE.md), [Execution Log](docs/Execution_Log.md), [Development Log](docs/Development_Log.md).
 

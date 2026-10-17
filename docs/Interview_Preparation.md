@@ -1,149 +1,167 @@
-# Interview preparation
+# Interview preparation in simple English
 
-Use these as explanations of this implementation, not claims of prior professional experience. Be clear about assistance used to build the project and demonstrate your understanding with the code and tests.
+## A short explanation you can say aloud
 
-## 30-second pitch
+StockSense is a demo that helps a shop owner review future demand, stock orders and expiry. It uses Seasonal Poisson Regression for the current sample data and compares it with simpler methods. Its average test error is about 2.86 units per product per day, but the data is generated, so real-shop accuracy is still unknown. The stock rules explain each suggested order, and the owner makes the decision.
 
-StockSense is a proposed inventory intelligence module that could complement Revio. It helps a kirana owner forecast demand, review replenishment and identify expiry or excess stock. I compare simple baselines with seasonal Poisson regression and gradient boosting using chronological validation, then apply transparent inventory rules. Customer reviews suggest product investigations but never become invented sales quantities. The working demo uses synthetic data, so its results are engineering evidence, not proof of real-store savings.
+## Questions and answers
 
-## Two-minute explanation
+### 1. What does this project do?
 
-A retailer can have both stockouts and overstock. A sales forecast alone does not solve that because inventory may expire or arrive too late. StockSense validates sales, batches, orders, product rules, reviews and a calendar as one snapshot. It masks known stockout days rather than treating constrained sales as full demand.
+It helps a shop owner review demand, stock orders, expiry risks and customer requests.
 
-One product-specific model combines season, weekdays, trend and festival dates into each daily forecast. Four validation windows select seasonal Poisson regression over boosting and two simple baselines. Twelve subsequent rolling windows test360 days. Synthetic observed MAE is2.860 versus2.964 for boosting and3.374 for the average.
+### 2. Is it an existing Cynbit product?
 
-The rule engine then simulates earliest-expiry-first consumption and dated receipts. It uses lead time plus review period, a configurable buffer, and conservative shelf-life, capacity, pack and MOQ limits to produce draft quantities. Unsupported products and unknown expiry require investigation. Reviews highlight requested variants or availability issues without numerically inflating forecasts. A production pilot would need consented real data, verified dates, integration and measured inventory outcomes.
+No. It is an assessment proposal. A live Revio connection is not implemented.
 
-## Five-minute technical walkthrough
+### 3. Does Revio already have these features?
 
-Minute1: Explain the merchant problem, Revio's advertised review-management context and why StockSense is a proposed complement, with feature overlap unverified.
+We have not verified whether an equivalent inventory feature exists privately. Confirm this with Cynbit.
 
-Minute2: Open the six CSV templates. Explain availability-censored sales, recorded batch expiry, confirmed purchase orders and snapshot date. Show validation rejecting an incomplete upload without changing data.
+### 4. Who would use it?
 
-Minute3: Show joint annual, weekday, trend and festival features in src/seasonal_model.py and the retained boosting comparator in src/forecasting.py. Explain why random splitting would leak future information. Display measured baseline comparisons and distinguish WAPE from accuracy.
-
-Minute4: Work through220 demand +30 buffer -80 stock -20 incoming=150. Show FEFO and the80-unit yogurt/five-day example. Explain why pack rounding cannot exceed a safe cap and why an early shortage cannot be repaired by a late receipt.
-
-Minute5: Show sugar-free review requests and the no-history warning. Explain uncalibrated uncertainty, synthetic data limits and the real-data shadow pilot needed before purchasing automation.
-
-## Questions and concise answers
-
-### 1. What does the application do in plain language?
-It helps a shop owner decide what stock needs attention: buy more, pause buying, inspect expiring batches or investigate a customer request. It explains each suggestion.
-
-### 2. Does Revio already offer this?
-Its public page advertises review management and related AI. I did not establish whether inventory exists privately. StockSense is a proposal; overlap must be checked with Cynbit.
-
-### 3. Who would use this?
-Kirana owners and purchasing staff are the proposed users. Revio publicly describes brand and location roles; kirana adoption is not verified.
-
-### 4. Why choose this problem?
-It links measurable ML forecasts to an operational decision and makes it possible to test business mathematics separately from model quality.
+The proposed users are kirana owners and staff who buy stock. They are not verified existing Revio users.
 
 ### 5. Where did the data come from?
-A reproducible seed42 generator created the business records; public Google Calendar supplied actual festival dates. None are Cynbit data. The app also accepts a validated user-supplied snapshot.
 
-### 6. Why not train directly on every sale?
-Sales can be limited by stock. A shelf with three units cannot reveal whether demand was three or fifteen. Known constrained days are masked, although this does not fully solve censored-demand bias.
+A Python generator created the shop records. Public Google Calendar supplied the festival dates.
 
-### 7. How do you handle missing dates?
-They remain unknown after daily reindexing. They are not silently filled with zero demand.
+### 6. How large is the dataset?
 
-### 8. Why seasonal Poisson regression?
-It models nonnegative daily counts with smooth annual, weekday, trend and event effects learned jointly for each product. It beat boosting and simple baselines on pooled validation. Boosting remains a useful nonlinear comparator.
+13 products, 12 with sales over 1,020 days: 12,240 sales rows, 24 batches, 3 purchase orders, 14 example reviews and 28 festival entries.
 
-### 9. Why not LSTM or a large language model?
-Neither is necessary for this small structured dataset. They add complexity, data needs or costs without demonstrated benefit here.
+### 7. What dates do the sales cover?
 
-### 10. What are the main features?
-The selected model uses two annual sine/cosine harmonics, weekday, trend and a pooled festival preparation window. The boosting comparator uses lags, rolling statistics, missingness, product identity, horizon, weekday, cyclic month and event proximity. No future stock, future sales or latent demand enters the predictors.
+1 January 2024 through 16 October 2026.
 
-### 11. What does direct multi-horizon mean?
-In the retained boosting comparator, each future day gets its own feature row from the same known origin history. Predictions are not fed back recursively as actual lags.
+### 8. Which model is selected?
 
-### 12. How is leakage prevented?
-Features stop at the origin, labels stop at the training cutoff, validation follows training chronologically, and the final test does not choose the model. A causality test changes future sales and checks that earlier features stay identical.
+Seasonal Poisson Regression, using scikit-learn PoissonRegressor. It trains separately for each eligible product.
 
-### 13. What are the baselines?
-A28-day observed average and a repeated last week. Missing weekly observations use only the prior28-day mean.
+### 9. Why this model?
 
-### 14. What happens if the baseline wins?
-The selection rule chooses it. Model complexity is not the objective; validation performance is.
+It predicts nonnegative counts, learns seasonal patterns and had the lowest model-selection error among the tested methods.
 
-### 15. What are the measured results?
-Seasonal Poisson rolling test MAE2.860, RMSE3.921, WAPE18.520%, bias-0.040. Same-data boosting MAE2.964; average MAE3.374. There are4,200 valid product-days across360 days, not real customer outcomes.
+### 10. What does it learn from?
 
-### 16. Is WAPE19% the same as81% accuracy?
-No. WAPE is aggregate absolute numerical error divided by aggregate actual units. Subtracting it from100 does not produce classification accuracy.
+Time of year, weekday, gradual trend and festival preparation windows, fitted against usable past sales.
 
-### 17. Why report bias?
-Persistent underprediction can cause shortages even when average absolute error looks acceptable. Positive bias means overprediction; negative means underprediction.
+### 11. Are seasons a separate prediction?
 
-### 18. How are festivals handled?
-Festival preparation windows are learned within the same forecast using actual public Google Calendar dates imported17 October2026. No second seasonal forecast or blanket uplift is added. The app uses a snapshot; regional/tentative dates need review.
+No. They contribute to the same daily forecast used by stock planning.
 
-### 19. Is the event uplift causal?
-No. Trend, promotions and overlapping events can confound it. The evidence table does not apply an extra forecast multiplier.
+### 12. How are festivals handled?
 
-### 20. How do you calculate an order?
-Sum forecast over lead time plus review period, add safety buffer, subtract usable stock and confirmed incoming adjusted for expiry, add backorders, then apply capacity, receipt-life, MOQ and pack constraints.
+The week before each festival and the festival day are marked. Past event windows are combined to learn one festival effect per product.
 
-### 21. Why use actual cumulative forecasts?
-Demand can change by weekday or event. Summing daily forecasts preserves those changes instead of assuming the same daily average everywhere.
+### 13. Why combine different festivals?
 
-### 22. What is safety stock here?
-A configurable number of demand-days. It is a transparent policy buffer, not a calibrated95% service-level calculation.
+There are too few examples of each named festival to fit reliable separate effects. This is simpler but cannot distinguish each festival independently.
 
-### 23. What if supply arrives too late?
-The simulation flags shortages before arrival. It does not pretend later stock prevents earlier lost sales; the owner may need to expedite supply.
+### 14. What does MAE 2.860 mean?
 
-### 24. Why can the order be below the calculated target?
-Shelf life, storage, pack sizes and MOQ can make the target infeasible. The system explains the binding constraint rather than ordering unsafe excess.
+The average absolute mistake was about 2.86 units per evaluated product per day in the synthetic test.
 
-### 25. How does FEFO work?
-Each day's demand consumes eligible stock with the earliest recorded expiry first. Expired and unknown-expiry batches do not supply the forecast.
+### 15. Can I say the model is 81.48% accurate?
 
-### 26. Does AI predict the official expiry date?
-No. Dates come from records. Forecasts estimate how many units might remain unsold before that date.
+No. WAPE is 18.520%, but subtracting that from 100 is not a valid percent-correct accuracy claim.
 
-### 27. How is an expiry beyond30 days handled?
-Its final unsold-at-expiry is unknown because demand is only forecast30 days. Blank risk is not zero risk.
+### 16. What are RMSE and bias?
 
-### 28. How do reviews affect quantities?
-They do not directly. Rules show product requests, availability, variants and quality signals for human investigation. There is no validated review-to-units conversion.
+RMSE gives more weight to big errors. Bias shows whether forecasts are generally too high or too low. Current values are 3.921 and -0.040 units.
 
-### 29. How do you avoid matching cola inside sugar-free cola?
-Longer aliases claim their text spans first; overlapping shorter aliases are skipped.
+### 17. How was the model tested?
 
-### 30. What happens to a new product?
-Without enough observed history it receives no precise demand forecast or purchase quantity. Requests support cautious investigation, not fabricated certainty.
+Four earlier 30-day periods chose the method. Twelve later 30-day periods measured its errors, with training restricted to records available before each forecast.
 
-### 31. How does CSV validation protect the workflow?
-All six tables pass schema, dates, keys, numeric and reference checks before replacing the snapshot. A bad upload leaves the old state intact.
+### 18. What is a product-day?
 
-### 32. Why SQLite?
-It provides simple optional local persistence without a separate service. It is not a substitute for tenant isolation or authenticated production storage.
+One product on one date. The main test scores 4,200 such records.
 
-### 33. What testing did you perform?
-Numerical business-rule tests, invalid-data and persistence checks, feature causality, no-history/expiry/receipt/event/review cases and automated navigation of all seven UI sections. Evaluation is executed separately and saved.
+### 19. Why not randomly mix dates for testing?
 
-### 34. What is the largest limitation?
-External validity: synthetic data can only show that the approach works on the simulation. Real-store data quality, demand patterns and supplier behavior may differ substantially.
+That can let future information help predict the past. Time-ordered tests are closer to how forecasting is used.
 
-### 35. What would you do next?
-Confirm Cynbit fit and interfaces, collect consented real data, run shadow recommendations, evaluate SKU-level errors and inventory costs, then add monitored authenticated deployment and human approval.
+### 20. What are the comparison methods?
 
-### 36. How would you measure business success?
-Compare stockout hours, expiry cost, inventory holding and owner review time against a defined baseline while controlling for promotions, seasons and supply changes. Forecast MAE alone is insufficient.
+A 28-day average, repeating the last week, and HistGradientBoosting, which combines small decision trees.
 
-### 37. What would you change if real demand is intermittent?
-Evaluate intermittent-demand methods and probabilistic/count models against the same chronological protocol. Do not assume the current selected model will win.
+### 21. Is the data realistic enough?
 
-### 38. Can this application place orders or be used publicly today?
-No orders are placed. It runs locally without authentication. A public production service requires additional access controls, monitoring, consent and integration work.
+It is useful for demonstrating code, but too simplified to establish real-shop performance. We need real records and separate future tests.
 
-### 39. Why is priority separate from confidence?
-Urgency and certainty are different. An expired batch is urgent even if demand prediction is weak. A clear forecast does not make every product urgent.
+### 22. Why ignore some stockout days?
 
-### 40. What should you never overclaim in the interview?
-Do not call synthetic data Cynbit data, claim a live Revio integration, assert a feature is absent without evidence, present WAPE as accuracy, or claim real-world savings from this simulation.
+If a shop sells its last three packets, true demand may be higher than three. That sale does not reveal full demand.
+
+### 23. What if there is no history?
+
+The app withholds an exact forecast. With some history but not enough for annual patterns, it can use the simple average.
+
+### 24. What is review period?
+
+The number of days between checking stock and deciding on orders.
+
+### 25. What is safety buffer?
+
+Extra demand-days of stock kept as a precaution. At 20 units/day, a 1.5-day buffer adds 30 units.
+
+### 26. What is lead time?
+
+The supplier delivery wait after placing an order.
+
+### 27. How is an order calculated?
+
+Expected demand during lead time plus review period, plus safety stock, minus usable stock and relevant confirmed deliveries, then adjusted for expiry and constraints.
+
+### 28. Why might the app suggest less than the target?
+
+Storage, expiry risk, packs or the minimum supplier order can make the full target unsuitable.
+
+### 29. What is FEFO?
+
+First Expiry, First Out: use the batch that expires earliest before later-expiring stock.
+
+### 30. Does AI predict the expiry date?
+
+No. The recorded date determines expiry. Forecasts estimate what may remain unsold before it.
+
+### 31. What does a blank expiry-risk value mean?
+
+The risk may be unknown, such as when expiry is beyond the 30-day forecast. Blank is not a guarantee of safety.
+
+### 32. Do reviews change demand quantities?
+
+No. Simple word rules highlight issues for a person to investigate.
+
+### 33. Is an LLM being used?
+
+No. Forecasting uses statistical/ML methods and review checks use English word rules.
+
+### 34. Is Google Calendar live?
+
+The dates were imported through the connected calendar. The app reads a saved snapshot and does not continuously sync.
+
+### 35. Why upload all six tables together?
+
+They refer to one another. Checking them together prevents an incomplete or inconsistent replacement.
+
+### 36. Where are uploaded records saved?
+
+They stay in the local app session unless the user chooses local saving. The saved snapshot uses SQLite.
+
+### 37. What tests passed?
+
+26 code checks covering data, forecasts, stock decisions, events, seasons and screen navigation. Passing code tests is not proof of real accuracy.
+
+### 38. Can the app place an order?
+
+No. It creates a draft recommendation for owner review.
+
+### 39. What would you do next?
+
+Collect permissioned real data, check stock records, compare models on later unseen periods, and measure stockout and expiry costs with owner review.
+
+### 40. What should I avoid claiming?
+
+Do not call generated data Cynbit data, claim an unverified integration or missing feature, present WAPE as accuracy, or claim measured real-store savings.

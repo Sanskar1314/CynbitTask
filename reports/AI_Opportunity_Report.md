@@ -1,87 +1,151 @@
 # Revio StockSense
 ## AI Opportunity Report
 
-Prepared for the Cynbit AI/ML Engineer Internship assessment. Research checked 17 October 2026. This is an independent proposal, not a Cynbit product announcement.
+A simple explanation of the business idea. Read this first to understand why the project exists.
 
-## Executive summary
+## What problem does it try to solve?
 
-StockSense helps a kirana owner decide what to replenish, what to pause and which batches need attention. It combines sales forecasts with explicit inventory rules and qualitative customer requests. The working prototype uses synthetic records, local CSV imports and a Streamlit dashboard. It has no supported Revio integration and no measured real-store financial benefit.
+A shop can run out of a product that customers want while keeping too much of another product. Some of that extra stock may expire. StockSense tries to help an owner decide what to buy, what to stop buying, and which stock needs attention.
 
-The opportunity is to connect customer-feedback investigation with operational decisions. Before product investment, Cynbit should confirm existing feature overlap, access to merchant sales data and willingness to pay. Public silence does not establish that an inventory feature is missing.
+It estimates demand for the next 7, 14 or 30 days. It then checks current stock, incoming deliveries and expiry dates before suggesting an order quantity. The owner makes the final decision. The app does not place orders.
 
-## Company and existing product context
+## How does this relate to Cynbit and Revio?
 
-Cynbit's site lists software, AI automation, cloud and marketing services [1]. Its product page advertises Revio for review aggregation, AI responses, sentiment/crisis signals and multi-location roles; TenantEase for property/rent administration; and Studio for adaptive coding and career support [2]. These are verified advertisements, not independently tested product performance.
+The company's public pages, checked on 17 October 2026, describe software, AI, cloud and marketing services. They list Revio for customer-review work, TenantEase for property and rent work, and Studio for coding and career support [1, 2]. These are the company's descriptions; we did not independently test every feature.
 
-Revio's advertised users include brand managers and location advisors. StockSense's proposed users are kirana owners and purchasing staff. Their overlap is a hypothesis; no evidence establishes that kiranas are current Revio customers. No inventory limitation, customer list, supported API or private roadmap was verified.
+Revio advertises review collection, AI replies, customer sentiment, issue alerts and multiple-location roles. StockSense is a separate assessment proposal that could be discussed as an addition. It has no working connection to Revio. We have not established whether Cynbit already has a similar inventory feature privately.
 
-## Industry evidence and merchant problem
+The proposed users are kirana owners and people who buy stock for shops. They are not verified existing Revio customers. Before building a real business around this idea, ask Cynbit about feature overlap, access to sales data and actual customer interest.
 
-ONDC's DigiDukaan describes fragmented kirana procurement and the value of digitized replenishment and inventory visibility [3]. This supports investigating the problem, not a causal claim about savings. Zoho already documents reorder levels and batch dates [4,5]. Therefore, inventory alerts and expiry records are established capabilities, not novel inventions.
+## Other ideas considered
 
-A store may sell out of a popular drink while money is tied up in slow biscuits. Daily sales understate demand when the shelf is empty. Perishable batches can expire before a conventional reorder calculation consumes them. Reviews can reveal unavailable variants but cannot reliably tell an owner how many units to purchase. The prototype explicitly models these distinctions.
+| Idea | What it would help someone do |
+|---|---|
+| Stock and expiry planning | Decide what to reorder and which batches may remain unsold |
+| Review-reply checking | Find AI replies that are inaccurate or unsuitable before sending them |
+| Repeated complaint tracking | Notice the same customer problem appearing again and again |
+| Rent-payment checking | Flag unusual or missing payments for a person to review |
+| Maintenance-request grouping | Put similar property repair requests together |
+| Learning and interview feedback | Help learners understand mistakes and choose practice tasks |
 
-## Opportunity comparison
+These are possible improvements to explore, not claims that Cynbit lacks them. StockSense was chosen because it makes it possible to demonstrate a prediction and then explain the stock decision built from it.
 
-Scores are analyst judgments, not measured company economics. Impact: potential customer value (1 low, 5 high). Feasibility: small-team prototype practicality. Data readiness: likely obtainable data, with no internal access assumed. Weighted score = 0.4 impact + 0.35 feasibility + 0.25 data readiness. Existing marketed functionality is treated as context for improvements, not as a new invention.
+## What is useful about the approach?
 
-| Proposed opportunity | Product/context | Impact | Feasibility | Data readiness | Score |
-|---|---|---|---|---|---|
-| Demand + expiry-aware purchasing | Revio-adjacent StockSense | 5 | 4 | 2 | 3.85 |
-| Evidence-grounded response quality checks | Revio, improve existing AI replies | 4 | 4 | 3 | 3.75 |
-| Repeated issue-to-resolution tracking | Revio operational follow-through | 4 | 4 | 3 | 3.75 |
-| Payment anomaly triage with human review | TenantEase | 4 | 3 | 2 | 3.15 |
-| Maintenance request clustering/routing | TenantEase extension hypothesis | 3 | 4 | 3 | 3.35 |
-| Learning-intervention evaluation | Studio, improve existing adaptive paths | 4 | 3 | 2 | 3.15 |
+A demand forecast alone is not enough. A delivery may arrive too late, stock may expire, or a supplier may sell only in packs. StockSense shows these reasons alongside the suggested quantity. Customer reviews can raise a question, such as a request for sugar-free cola, without being converted into invented sales.
 
-StockSense scores well for demonstrable operational decisions and measurable forecast/inventory tests. Its weak data readiness is material: merchants must supply reliable sales, stock and expiry records. If integration is difficult, a narrower Revio quality or issue-resolution enhancement may be more feasible. Small changes in subjective weights can change the ranking.
+Inventory alerts and batch tracking already exist in other products. Zoho's documentation describes reorder levels and batch dates [3, 4]. ONDC's DigiDukaan page discusses digital tools for shop ordering and stock work [5]. These sources support the problem context. They do not prove this project is new or better.
 
-## Why choose StockSense for this assessment?
+## Which model does the app use?
 
-It demonstrates forecasting, leakage control, validation, deterministic decision logic, NLP and user-facing explanations in one coherent workflow. The choice is suitable for an engineering proof of concept; it does not establish commercial superiority. It moves beyond repeating sentiment classification already advertised by Revio.
+The current demo uses **Seasonal Poisson Regression**. The Python class is called `PoissonRegressor`, from the scikit-learn library. A separate model is trained for each product that has enough sales history.
 
-## Proposed solution and users
+A regression model predicts a number. Here, that number is the expected units sold per day. Poisson regression is designed for counts and keeps the expected number above zero. A result such as 7.5 means an average expectation, not that the shop can sell half a packet.
 
-The owner imports six related CSV tables: products, sales, batches, purchase orders, reviews and a locally maintained event calendar. The dashboard estimates 7-, 14- and 30-day demand, produces constrained draft purchase quantities, flags expiry/overstock and surfaces customer requests. Staff verify stock records and supplier dates. The owner approves any actual purchasing outside this application.
+The model learns four kinds of patterns together: changes over the year, differences between weekdays, slow growth or decline over time, and festival preparation days. These produce **one forecast**, which the ordering and expiry pages also use.
 
-A future optional module could obtain authorized feedback through a supported Revio interface and sales through a POS connector. The prototype simulates this with imported reviews. Review mentions create an investigation queue; they do not create invented sales observations or automatic forecast multipliers.
+The annual pattern uses sine and cosine waves. These are smooth repeating curves that help the model move gradually from one season to the next. The model does not simply apply a rule such as “increase every product in winter.”
 
-## Business value and measurement plan
+Festival preparation means the seven days before a festival plus the festival day. For each product, the current model learns one shared festival effect from all past festival windows. It does not learn a separate Diwali effect and Holi effect. We made this choice because there are only two or three past examples of each named festival. Separate effects were reacting too strongly to random variation.
 
-Potential benefits are fewer avoidable stockouts, less expiry loss, less excess inventory and faster purchasing review. None has been measured in a live shop. Run a shadow pilot first: owners see suggestions but retain existing purchasing policy. Record recommendation acceptance, overrides, data completeness, stockout hours, expiry cost and time spent reviewing orders. Then compare matched periods or randomized store groups while accounting for promotions, seasonality and supplier changes.
+### Why choose this model?
 
-Measure forecast MAE/WAPE by SKU and volume group, plus bias and coverage. Evaluate inventory outcomes separately: a lower forecast error does not automatically reduce waste, because costs and supplier constraints matter. Predefine stop conditions for bad stock records, repeated shortages and deteriorating bias. Do not claim percentage savings without an appropriate pilot.
+It fits the kind of number we want to predict, can learn a different seasonal pattern for each product, and runs on a normal laptop. More importantly, it had the lowest average error in the earlier periods used to choose the model. This is a reason to use it in this demo, not proof that it is the best model for a real shop.
 
-## Competitive differentiation
+The app also compares it with three other methods. A 28-day average repeats the recent average. A weekly repeat method copies the last week's pattern. HistGradientBoosting is a machine-learning model that combines many small decision trees to learn more complex relationships.
 
-The proposed combination is transparent forecast selection, expiry-aware batch simulation, receipt timing and review-based assortment investigations. Basic reordering and batch tracking already exist elsewhere [4,5]. This implementation does not establish a proprietary moat, market-first capability or superiority over commercial inventory products. Its differentiator for the assessment is explainable integration of the components and candid handling of uncertainty.
+### When does the app avoid this model?
 
-## Prototype scope and measured evidence
+The seasonal model needs at least 180 usable daily observations spread across at least 365 days. Otherwise, it uses the 28-day average and labels that choice. If even recent sales history is too limited, it gives no exact forecast. A new product does not get a made-up demand number just because a review asks for it.
+## How accurate is it?
 
-Implemented: synthetic data generation, schema checks, four forecasting candidates, chronological evaluation, FEFO expiry simulation, periodic-review quantities, receipt-life/storage caps, descriptive seasonal/event analysis, English review rules, seven dashboard sections, CSV export/import and SQLite persistence.
+**Real-shop accuracy is not known.** The following numbers come from the project's computer-generated data. We should not present them as results from Cynbit customers or real shops.
 
-Measured on 4,200 synthetic uncensored product-days across 360 rolling test days: seasonal Poisson MAE 2.860, RMSE 3.921, WAPE 18.520%, bias -0.040. On the same revised data, boosting MAE is 2.964 and moving-average MAE is 3.374. The 3.5% and 15.2% respective reductions are simulation-only, not business ROI. No-history products receive no exact demand forecast.
+| Method | Error used to choose the model | Error in later test periods |
+|---|---|---|
+| Seasonal Poisson Regression | 3.088 units/day | 2.860 units/day |
+| HistGradientBoosting | 3.178 units/day | 2.964 units/day |
+| 28-day average | 3.507 units/day | 3.374 units/day |
+| Repeat the last week | 4.230 units/day | 4.133 units/day |
 
-## Risks and limitations
+Both error columns use **MAE: Mean Absolute Error**. It is the average size of a mistake, ignoring whether the forecast was too high or too low. If the actual sale is 10 and the forecast is 7, the error is 3 units. An MAE of 2.860 means the forecast was wrong by about 2.86 units per evaluated product per day on average. It does not mean every forecast is within that amount.
 
-Data readiness is the largest adoption risk. Sales censored by stockouts and missing batch labels distort recommendations. Festivals vary by region and year; the public Google Calendar snapshot was imported retrospectively and is not continuously synchronized. Regional differences and tentative dates require review. Review rules can misread negation, languages and multi-product text. Model selection is pooled across products and may conceal weak SKUs. There is no authenticated multi-tenant deployment, supported Revio API, purchase execution or calibrated service guarantee.
+| Other result | Value | What it means |
+|---|---|---|
+| WAPE | 18.520% | Add all absolute errors, then divide by all actual units sold. Lower is better. |
+| RMSE | 3.921 units | An error score that gives extra weight to large mistakes. Lower is better. |
+| Bias | -0.040 units | Average forecast minus actual sales. The small negative value means slight overall underprediction. |
 
-## Production roadmap and investment gates
+**Do not call this 81.48% accuracy.** Subtracting WAPE from 100 does not create a reliable “percent correct” score. Forecasting predicts quantities, so the size of each error matters.
 
-1. Discovery: verify Cynbit overlap and supported interfaces; interview kirana owners and inspect consented data samples.
-2. Data pilot: reconcile sales, receipts, returns and batch balances; require recorded availability and verified regional events.
-3. Shadow operation: backtest real demand, evaluate SKU-level failures, collect override reasons and compare policies without executing orders.
-4. Controlled rollout: authenticated tenant isolation, audit history, monitored model versions, supplier-confirmed receipts and approval workflow.
-5. Expansion only after evidence: multi-store transfers, supplier reliability, calibrated uncertainty and budget optimization.
+On the same current dataset, the chosen model's MAE is about 3.5% lower than boosting and 15.2% lower than the average method. That is a comparison of forecast errors, not a percentage of money saved. A three-unit error may be small for a product selling 50 units a day but serious for one selling four.
 
-## References
+### How were these numbers measured?
 
-[1] Cynbit services, https://www.cynbit.in/services (accessed 2026-10-17).
+First, the models learned from older records and predicted four later 30-day periods. Those periods were used to choose the model. Next, the chosen method was kept fixed while all methods were tested over twelve more 30-day periods, covering 360 days.
 
-[2] Cynbit products, https://www.cynbit.in/products (accessed 2026-10-17). Public product positioning; no independent performance verification.
+At each step, training used only records from before the forecast date. As time moved forward, training could include records that had become available since the previous step. This imitates updating a model as a shop collects more sales.
 
-[3] ONDC DigiDukaan, https://www.ondc.org/pages/digidukaan.html (accessed 2026-10-17). Industry program positioning, not a StockSense outcome study.
+The main test contains **4,200 product-days**. One product-day means one product on one date. There were 4,320 possible records for the 12 products across 360 days; 120 were left out because sales were limited by stock availability. The thirteenth product has no sales history and is not scored.
 
-[4] Zoho Inventory reorder levels, https://www.zoho.com/inventory/help/items/additional-features.html (accessed 2026-10-17).
+This project has been developed and adjusted using the same simulation. It is not an independent real-world test. Earlier versions also used different data, so their scores should not be used to claim a clean before-and-after improvement.
+## What is in the dataset?
 
-[5] Zoho Inventory batch tracking, https://www.zoho.com/us/inventory/help/advanced-inventory-tracking/batch-tracking.html (accessed 2026-10-17; localized redirect may apply).
+The shop records are **synthetic**, which means a Python program created them. They are not downloaded from a real store and are not Cynbit data. The festival dates are the exception: they were imported from the public Google Calendar called Holidays in India.
+
+| Item | Current dataset specification |
+|---|---|
+| Store coverage | One fictional kirana store |
+| Sales dates | 1 January 2024 to 16 October 2026 |
+| History length | 1,020 days for each of 12 products |
+| Products | 13 listed products; 12 have sales and one is a new product |
+| Sales records | 12,240 rows: one product on one day per row |
+| Stock batches | 24 rows describing stock held at the latest snapshot |
+| Purchase orders | 3 examples of incoming or planned supply |
+| Customer reviews | 14 written examples, not real customer messages |
+| Festival dates | 28 entries: seven festival names across 2024-2027 |
+| Calendar import date | 17 October 2026; saved copy, not automatic live sync |
+| Dataset version | winter-calendar-v3 |
+| Random seed | 42; this makes the same generator repeatable |
+
+Products include cola, water, mango drink, milk, yogurt, chips, tea, coffee, biscuits, chocolate, packaged sweets and rice. Sugar-free cola is the new product without sales history. Prices and stock values are examples in Indian rupees.
+
+The generator combines a starting demand level with seasonal changes, weekends, gradual trends, festival periods, example promotions and random variation. It also creates supply interruptions so some days run out of stock. It deliberately includes expiry and overstock examples so those screens can be demonstrated.
+
+The current tea and coffee example has a winter peak. The earlier demo curve peaked near October by mistake; the generator was corrected. That change is an assumption in a fictional example, not something discovered in real shop records. The gifting example also has a festival increase built into the generated demand. A model matching these patterns does not prove that it will match a real shop.
+
+### Why this data is a major limitation
+
+Real demand can change with location, prices, promotions, weather, competitors, customer habits and supply problems. The small simulation does not capture all of that. A good-looking test result can therefore coexist with forecasts that feel unrealistic.
+
+We need real sales and stock records, with permission to use them, before judging business usefulness. Those records should include dates, product quantities, price changes, promotions and stock availability. We should test future periods that were not used while adjusting the model, and inspect errors for each product, not only one average score.
+
+## What would success look like in a real shop?
+
+Useful measures would include fewer hours out of stock, less money lost on expired goods, less money tied up in slow stock, and less time spent checking orders. None of these benefits has been measured in this project.
+
+A first trial should show suggestions to the owner without placing orders. Compare the suggestions with the shop's current method over several periods. Record what the owner accepts, what they reject and why. Also record whether supply problems, promotions or price changes explain the outcome.
+
+## What should happen before real use?
+
+1. Confirm the idea and any existing feature overlap with Cynbit.
+2. Obtain permission to use real shop records and check that stock balances are correct.
+3. Compare models on later real periods and examine mistakes by product and season.
+4. Try recommendations with owner review and measure stockout and expiry costs.
+5. Add sign-in, separate each shop's records, and keep a record of changes before wider use.
+
+## Where to read next
+
+The Technical Approach Report explains the model, data, tests and order calculation. The Complete Project Explanation explains each screen and the files in the repository, with short interview answers.
+
+## Sources checked on 17 October 2026
+
+[1] Cynbit services: https://www.cynbit.in/services
+
+[2] Cynbit products: https://www.cynbit.in/products
+
+[3] Zoho reorder levels: https://www.zoho.com/inventory/help/items/additional-features.html
+
+[4] Zoho batch tracking: https://www.zoho.com/us/inventory/help/advanced-inventory-tracking/batch-tracking.html
+
+[5] ONDC DigiDukaan: https://www.ondc.org/pages/digidukaan.html

@@ -1,136 +1,185 @@
 # Revio StockSense
 ## Technical Approach Report
 
-Implementation and evaluation snapshot: 17 October 2026. All bundled business records are synthetic. No API keys, LLM service or live Revio connection is used.
+How the current application works, explained in everyday language. The model and dataset were not changed for this rewrite.
 
-## Problem and functional requirements
+## From records to a recommendation
 
-Estimate future product demand and translate it into reviewable inventory decisions. The system must distinguish observed sales from latent demand, use recorded batch dates, account for timed supply and refuse unsupported exact quantities. It supports sales analysis, 7/14/30-day forecasts, replenishment, seasonal/event evidence, expiry, slow movers, review intents and CSV/SQLite data management.
+1. Read six related CSV files. A CSV is a plain table that can also be opened in a spreadsheet.
+2. Check the dates, product IDs, quantities and links between those files.
+3. Learn demand patterns from usable past sales and the calendar.
+4. Predict the next 30 days; the screen can show 7, 14 or 30 days.
+5. Check stock, deliveries and expiry against those predictions.
+6. Show draft order quantities and reasons for the owner to review.
 
-Nonfunctional goals are reproducibility, modularity, explicit failure states and understandable explanations. This is a single-user local proof of concept, not a production transaction system. Upload limits bound memory and training work; they are not performance guarantees.
+If an upload is invalid, the old dataset stays active. The app does not replace only half of the related files.
 
-## Architecture
+## Which model does the app use?
 
-```text
-Six CSV tables -> atomic validation -> snapshot
-  sales + calendar -> causal features -> baseline/ML comparison -> forecasts
-  batches + orders + forecasts -> daily FEFO -> constrained purchasing review
-  reviews + aliases -> qualitative intent/evidence -> investigation queue
-  all outputs -> seven-section Streamlit dashboard -> CSV exports
-  explicit save/load <-> local SQLite
-```
+The current demo uses **Seasonal Poisson Regression**. The Python class is called `PoissonRegressor`, from the scikit-learn library. A separate model is trained for each product that has enough sales history.
 
-Reviews intentionally bypass numerical forecasting. There is no training label that could justify converting a review count into units of demand. All outputs remain decision support.
+A regression model predicts a number. Here, that number is the expected units sold per day. Poisson regression is designed for counts and keeps the expected number above zero. A result such as 7.5 means an average expectation, not that the shop can sell half a packet.
 
-## Technology choices
+The model learns four kinds of patterns together: changes over the year, differences between weekdays, slow growth or decline over time, and festival preparation days. These produce **one forecast**, which the ordering and expiry pages also use.
 
-Python 3.12, pandas/NumPy for tables and arrays, scikit-learn PoissonRegressor and HistGradientBoostingRegressor for demand, Streamlit and Plotly for the interface, SQLite from the standard library for persistence, pytest for checks and ReportLab for PDFs. Versions are pinned in requirements files. No deep learning framework is needed for this small tabular dataset. No prompt engineering is involved because no language model is called.
+The annual pattern uses sine and cosine waves. These are smooth repeating curves that help the model move gradually from one season to the next. The model does not simply apply a rule such as “increase every product in winter.”
 
-## Dataset design and validation
+Festival preparation means the seven days before a festival plus the festival day. For each product, the current model learns one shared festival effect from all past festival windows. It does not learn a separate Diwali effect and Holi effect. We made this choice because there are only two or three past examples of each named festival. Separate effects were reacting too strongly to random variation.
 
-Seed42 generates 12,240 daily sales rows covering 1,020 days, twelve stocked SKUs and one no-history SKU. Categories include beverages, dairy, snacks, pantry, gifting and essentials. Demand combines product base rate, smooth annual seasonality, weekday effects, modest trend, illustrative event effects and stochastic variation. Receipts cap actual sales; supply interruptions create censored observations. A final snapshot includes 24 batches, three purchase orders and fourteen reviews.
+### Why choose this model?
 
-Six linked tables are validated together. Required columns, numeric finiteness/nonnegativity, dates, unique keys, product references, stock balance and order chronology are checked. Missing manufacturing/expiry is allowed but represented as unknown. Duplicate sale dates per SKU are rejected rather than aggregated silently. Availability fields are optional; absent fields prevent reliable lost-demand identification. See docs/Data_Card.md and src/data.py for the full schema.
+It fits the kind of number we want to predict, can learn a different seasonal pattern for each product, and runs on a normal laptop. More importantly, it had the lowest average error in the earlier periods used to choose the model. This is a reason to use it in this demo, not proof that it is the best model for a real shop.
 
-The simulation stores latent demand only for a separate evaluation diagnostic. It never enters model features. The public Google Holidays in India calendar supplies 28 selected dates for 2024–2027, imported on 17 October 2026. Synthetic event effects were regenerated to match these dates; uploaded sales are never rewritten. This snapshot is not continuous OAuth synchronization. Regional variation and tentative dates remain relevant.
+The app also compares it with three other methods. A 28-day average repeats the recent average. A weekly repeat method copies the last week's pattern. HistGradientBoosting is a machine-learning model that combines many small decision trees to learn more complex relationships.
 
-## Censoring and historical analysis
+### When does the app avoid this model?
 
-`demand_series` masks known stockouts and days whose sales exhaust recorded availability, then reindexes missing dates to NaN. It does not label those days zero demand. The conservative sold-out rule can also mask a day whose true demand exactly equals stock; this trades lost observations for avoiding false certainty. Selection on available days can still bias learning downward.
+The seasonal model needs at least 180 usable daily observations spread across at least 365 days. Otherwise, it uses the 28-day average and labels that choice. If even recent sales history is too limited, it gives no exact forecast. A new product does not get a made-up demand number just because a review asks for it.
 
-Historical summaries retain recorded total units/revenue, recent 28-day observed mean, 7/30-day equivalents, previous-window growth and standard deviation. Zero-heavy history is marked intermittent; recent mean >=15 is fast moving and <3 slow moving. These thresholds are transparent demo heuristics, not learned business categories.
+## Model settings, with their meanings
 
-## Selected seasonal model
+| Setting | Value and meaning |
+|---|---|
+| Python library | scikit-learn 1.9.1 |
+| Model class | PoissonRegressor; estimates expected daily counts |
+| Separate fit | One model per eligible product |
+| Input columns | 12: one time trend, four annual-wave values, six weekday indicators and one festival indicator |
+| Annual waves | Two sine/cosine pairs; describe smooth repeating yearly changes |
+| StandardScaler | Puts input columns on comparable scales before training |
+| alpha | 0.03; discourages unnecessarily large fitted effects |
+| max_iter | 500; maximum number of training update steps |
+| tol | 0.0000001; training stops when changes are small enough |
+| Forecast length | Up to 30 days |
+| Minimum annual history | 180 usable observations spanning at least 365 days |
 
-One Poisson regression per product jointly learns trend, two annual sine/cosine harmonics, weekday indicators and a pooled festival preparation-window indicator (seven days before through event day). StandardScaler and PoissonRegressor(alpha=.03, max_iter=500) yield nonnegative expected counts through a log link [3]. Smooth annual terms avoid month-boundary steps [4]. Seasonal labels in reporting are broad display groups, not weather forecasts. There is no separate seasonal prediction or universal festival multiplier.
+These are fixed settings for this experiment. They were not shown to be optimal for every shop. The model does not use customer review counts to increase demand and does not use future sales as an input. It also does not use local weather or a supplied future promotion plan.
 
-Training uses only uncensored observations before the cutoff. At least 180 observed days spanning 365 days are required; otherwise the model explicitly falls back to the 28-day average. No-history products remain unsupported. The model can miss sudden changes, promotions or regional differences; two or three annual cycles do not establish real-world reliability.
+The boosting comparison uses 90 training rounds, up to 15 leaves in each tree, a learning rate of 0.08 and a fixed random seed of 42. Its inputs include recent sales averages, older sales values, product ID and calendar information. It is a comparison method, not the currently selected demo model.
 
-## Legacy comparator feature engineering
+## How accurate is it?
 
-For each SKU and forecast origin, construct lag1, lag7, mean7/28/84, std28, mean28-minus-mean84 trend and missing fraction over28 days. Add categorical product identity, horizon1–30, target weekday, sine/cosine of target month and whether an event is within the next seven days. Month encoding wraps December into January smoothly. Calendar dates are assumed known at the origin.
+**Real-shop accuracy is not known.** The following numbers come from the project's computer-generated data. We should not present them as results from Cynbit customers or real shops.
 
-Historical target-day sales, future availability and latent simulated demand are excluded. Category is not separately encoded: product identity and history carry this small closed catalog. Future promotions are not supplied, so their effect remains an omitted driver. New SKUs cannot inherit a precise forecast from identity alone.
+| Method | Error used to choose the model | Error in later test periods |
+|---|---|---|
+| Seasonal Poisson Regression | 3.088 units/day | 2.860 units/day |
+| HistGradientBoosting | 3.178 units/day | 2.964 units/day |
+| 28-day average | 3.507 units/day | 3.374 units/day |
+| Repeat the last week | 4.230 units/day | 4.133 units/day |
 
-## Comparator algorithms and training
+Both error columns use **MAE: Mean Absolute Error**. It is the average size of a mistake, ignoring whether the forecast was too high or too low. If the actual sale is 10 and the forecast is 7, the error is 3 units. An MAE of 2.860 means the forecast was wrong by about 2.86 units per evaluated product per day on average. It does not mean every forecast is within that amount.
 
-Moving average repeats the last28-day observed mean. Weekly seasonal naive repeats the last seven calendar positions, filling missing positions with the past28-day mean. These are meaningful simple comparators.
+| Other result | Value | What it means |
+|---|---|---|
+| WAPE | 18.520% | Add all absolute errors, then divide by all actual units sold. Lower is better. |
+| RMSE | 3.921 units | An error score that gives extra weight to large mistakes. Lower is better. |
+| Bias | -0.040 units | Average forecast minus actual sales. The small negative value means slight overall underprediction. |
 
-The global direct model learns all products and horizons together: prediction = f(origin-history features, known future calendar, SKU, horizon). It uses 90 gradient-boosted tree iterations, 15 leaf nodes per tree, learning rate .08, L2=2, seed42 and squared-error loss. Each tree corrects residual errors from the current ensemble. Product index is categorical, not treated as a meaningful numerical order. Negative outputs are clipped to zero.
+**Do not call this 81.48% accuracy.** Subtracting WAPE from 100 does not create a reliable “percent correct” score. Forecasting predicts quantities, so the size of each error matters.
 
-Weekly training origins start after83 calendar days. Targets extend at most30 days and never beyond the training cutoff. Only observed, uncensored targets are fitted. No internal random holdout is used: early stopping is disabled. Hyperparameters are fixed for this experiment rather than optimized on the final test set. If insufficient training samples exist, the UI falls back to the moving average.
+On the same current dataset, the chosen model's MAE is about 3.5% lower than boosting and 15.2% lower than the average method. That is a comparison of forecast errors, not a percentage of money saved. A three-unit error may be small for a product selling 50 units a day but serious for one selling four.
 
-Forecast eligibility requires at least14 observed historical days and seven observed values in the latest28 days. Unsupported products get missing forecasts and zero draft purchase quantity with an investigation message. The data-support label becomes limited if fewer than56 observations exist in84 days or more than20% of recent28 days are missing. It is not a probability or accuracy interval.
+### How were these numbers measured?
 
-## Chronological evaluation protocol
+First, the models learned from older records and predicted four later 30-day periods. Those periods were used to choose the model. Next, the chosen method was kept fixed while all methods were tested over twelve more 30-day periods, covering 360 days.
 
-Four chronological validation windows select Seasonal Poisson regression by pooled MAE. Twelve subsequent disjoint 30-day rolling test windows cover 360 days. Each origin trains only on earlier data; the model choice stays frozen. Results are synthetic uncensored observations, not merchant performance.
+At each step, training used only records from before the forecast date. As time moved forward, training could include records that had become available since the previous step. This imitates updating a model as a shop collects more sales.
 
-| Method | Validation MAE | Test MAE | Test RMSE | Test WAPE | Test bias |
-|---|---:|---:|---:|---:|---:|
-| Seasonal Poisson regression | 3.088 | 2.860 | 3.921 | 18.520% | -0.040 |
-| HistGradientBoosting | 3.178 | 2.964 | 4.066 | 19.193% | -0.313 |
-| Moving average 28d | 3.507 | 3.374 | 4.721 | 21.847% | -0.040 |
-| Weekly seasonal naive | 4.230 | 4.133 | 5.712 | 26.765% | -0.208 |
+The main test contains **4,200 product-days**. One product-day means one product on one date. There were 4,320 possible records for the 12 products across 360 days; 120 were left out because sales were limited by stock availability. The thirteenth product has no sales history and is not scored.
 
-Test count: 4,200 observed product-days. The selected model reduces MAE by 3.5% versus boosting and 15.2% versus the average on the same revised data. All four broad seasonal groups improve; this does not imply every SKU improves. Separate latent simulation diagnostic: n4,320, MAE2.901. WAPE is not classification accuracy. Old v1/v2 results use different data and/or protocol and are archived in evaluation/archive; they are not a direct before/after comparison.
+This project has been developed and adjusted using the same simulation. It is not an independent real-world test. Earlier versions also used different data, so their scores should not be used to claim a clean before-and-after improvement.
+## What is in the dataset?
 
-MAE measures average absolute error; RMSE emphasizes larger errors; bias is prediction minus actual. Shorter uploaded histories use a restricted protocol and cannot establish full-year accuracy. The calendar was imported retrospectively, not from a historical point-in-time feed.
+The shop records are **synthetic**, which means a Python program created them. They are not downloaded from a real store and are not Cynbit data. The festival dates are the exception: they were imported from the public Google Calendar called Holidays in India.
 
-## Seasonal and festival logic
+| Item | Current dataset specification |
+|---|---|
+| Store coverage | One fictional kirana store |
+| Sales dates | 1 January 2024 to 16 October 2026 |
+| History length | 1,020 days for each of 12 products |
+| Products | 13 listed products; 12 have sales and one is a new product |
+| Sales records | 12,240 rows: one product on one day per row |
+| Stock batches | 24 rows describing stock held at the latest snapshot |
+| Purchase orders | 3 examples of incoming or planned supply |
+| Customer reviews | 14 written examples, not real customer messages |
+| Festival dates | 28 entries: seven festival names across 2024-2027 |
+| Calendar import date | 17 October 2026; saved copy, not automatic live sync |
+| Dataset version | winter-calendar-v3 |
+| Random seed | 42; this makes the same generator repeatable |
 
-The selected model learns product-specific season and event associations jointly. Forecasting contains one prediction chart with calendar markers; historical monthly/event evidence is expandable on the same page. The seasonal chart aggregates observed daily units by month across years. The event evidence table compares seven pre-event days with the preceding28-day baseline. It requires at least five observed event days,20 baseline days and two comparable occurrences. Overlapping events, promotions and trends confound this descriptive comparison. It never adds an extra uplift to model output. Missing sufficient evidence is reported explicitly.
+Products include cola, water, mango drink, milk, yogurt, chips, tea, coffee, biscuits, chocolate, packaged sweets and rice. Sugar-free cola is the new product without sales history. Prices and stock values are examples in Indian rupees.
 
-## Reorder mathematics and safety policy
+The generator combines a starting demand level with seasonal changes, weekends, gradual trends, festival periods, example promotions and random variation. It also creates supply interruptions so some days run out of stock. It deliberately includes expiry and overstock examples so those screens can be demonstrated.
 
-Protection period = supplier lead time + review period. Target = sum of forecast over that period + safety stock. Safety stock = configured safety days times mean forecast over protection. Raw need = max(0, target - eligible on-hand - confirmed receipts + simulated expiry loss + backorders).
+The current tea and coffee example has a winter peak. The earlier demo curve peaked near October by mistake; the generator was corrected. That change is an assumption in a fictional example, not something discovered in real shop records. The gifting example also has a festival increase built into the generated demand. A model matching these patterns does not prove that it will match a real shop.
 
-The default review period is7 days and safety buffer1.5 days. These are editable policy assumptions, not optimized cost or guaranteed service levels. Example:20/day for11 days +30 safety -80 usable -20 incoming =150 units. The unit test verifies this exact result.
+### Why this data is a major limitation
 
-Only confirmed purchase orders arriving after snapshot and within the relevant period count. Draft/cancelled/received records and overdue unconfirmed receipts do not count as future supply. Daily simulation flags shortages before new supply can arrive; a later order cannot repair a past lost sale. Protection longer than30 days withholds automatic quantities. Lead0 is conservatively next-day arrival because this is a daily snapshot model.
+Real demand can change with location, prices, promotions, weather, competitors, customer habits and supply problems. The small simulation does not capture all of that. A good-looking test result can therefore coexist with forecasts that feel unrealistic.
 
-## FEFO expiry and constraints
+We need real sales and stock records, with permission to use them, before judging business usefulness. Those records should include dates, product quantities, price changes, promotions and stock availability. We should test future periods that were not used while adjusting the model, and inspect errors for each product, not only one average score.
 
-At each future day, add confirmed arrivals, expire batches whose date is before that day, then allocate demand to the earliest eligible expiry. Future recorded expiry dates are inclusive. Stock expiring on the snapshot date is excluded because forecasts start tomorrow. Missing expiry is not assumed safe; it blocks automatic purchasing pending verification. Expired stock is never sold.
+## Sales are not always the same as demand
 
-For a batch80 units expiring in five future days at demand6/day, estimated sales are30 and unsold-at-expiry50. Multiple batches share demand under FEFO, avoiding double allocation. A batch expiring beyond the forecast horizon has unknown unsold-at-expiry, not zero risk. Recorded dates are never predicted by ML.
+Suppose the shop has three milk packets and sells all three. There may have been only three buyers, or there may have been ten. The sales record cannot tell us how many customers left without buying.
 
-New orders are capped by residual forecast shortage during assumed remaining receipt life and available unit capacity at arrival before consumption. Then apply MOQ and pack rounding; if upward rounding violates the cap, round down to a feasible pack quantity or withhold if below MOQ. The system deliberately allows constrained quantities below the policy target and explains why. New receipts use catalog remaining-life assumptions until supplier batch labels exist. No monetary budget or simultaneous supplier optimization is implemented.
+When the records show that stock ran out, the app leaves that day out of demand training instead of calling the recorded sale the full demand. Missing dates are also treated as unknown, not as zero sales. This is a simple precaution. It can still miss high-demand days and does not fully solve the problem of lost sales.
 
-## Slow stock and priorities
+The demo includes a special column called simulated_demand: the demand the generator created before stock limits. Real shops usually do not know this number. It is used only for a separate test calculation, never to train the model. The main reported scores use observed sales on days not limited by stock.
 
-Excess = max(0, eligible on-hand -30-day forecast). Days cover = eligible quantity / mean forecast, a rough screening metric that does not account for future expiry. Slow-stock review also flags recent mean<3 or growth below-20%. It suggests purchasing review, condition inspection and permitted supplier return/promotion consideration, not automatic discounting or disposal.
+## How an order quantity is calculated
 
-Ordinal priorities: P1 for recorded expiry concerns or shortage before lead time; P2 for replenishment, constraints or unsupported history; P3 for excess; P4 for sufficient stock. Forecast support is a separate column. No arbitrary weighted score mixes incompatible units.
+**Lead time** is how long a supplier takes to deliver. **Review period** is how many days you wait between checking and placing orders. If delivery takes four days and you review stock every seven days, you plan for eleven days in total.
 
-## Review NLP
+**Safety buffer** means extra stock kept as a precaution. A buffer of 1.5 demand-days with expected sales of 20 units per day means 30 extra units. It is a chosen setting, not a guarantee that stock will never run out.
 
-Aliases are matched longest first with nonoverlapping spans, so sugar-free cola does not incorrectly match ordinary cola inside the same phrase. English regex rules detect availability complaints, requests, variants and quality complaints; limited negation exceptions handle phrases such as not out of stock. Supplied product IDs are treated as input assertions. Evidence text and original review remain visible. Rules are not a trained sentiment classifier and there is no claimed NLP accuracy benchmark. Multi-product attribution, sarcasm and multilingual reviews remain weaknesses.
+Example: expected sales are 20 a day for 11 days, so planned demand is 220. Add 30 safety units, subtract 80 usable units already held and 20 confirmed incoming units. The starting order suggestion is 150 units. The actual app adds up each day's forecast, so it can account for changing demand rather than always using a flat 20.
 
-## UI, persistence and privacy
+The app then checks expiry, storage space, supplier pack size and minimum order size. Those checks can reduce the quantity. A minimum order quantity, or MOQ, is the smallest amount a supplier will accept. If the safe limit is 20 and packs contain 12, the app can suggest 12 rather than rounding up to an unsafe 24.
 
-Streamlit offers seven sections and caches computation by snapshot content. Demo metrics apply only to the demo; uploaded/local-loaded snapshots start with the baseline until their own evaluation is run. All six uploads replace state only after validation succeeds. Review-only replacement also validates the related snapshot. SQLite save/load is explicit and uses fixed table names and atomic file replacement. Formula-leading strings are escaped in supplied CSV export buttons.
+## What happens to stock that may expire?
 
-Data stays in the local process and optional `.local/snapshot.sqlite`; it is not sent to a model API. The application has no authentication and should bind to127.0.0.1. Production requires tenant isolation, encryption, access control, retention/deletion policy, audit logs and secure connectors. Streamlit's built-in grid exports are not the application-controlled safe CSV export path; use the named download buttons for untrusted text. No secrets belong in Git.
+The app uses the recorded expiry dates. It does not predict or invent the official expiry date. It estimates how much stock may still be unsold before that date.
 
-## Verification and deployment plan
+It uses **FEFO: First Expiry, First Out**. Each day's expected sales are assigned to the batch that expires first. For example, if 80 yogurt units expire after five days and expected sales are six a day, about 30 may sell and 50 may remain at risk. Two batches cannot both claim the same sales.
 
-Executed pytest unit/integration tests cover schema failures, stock ledger, SQLite roundtrip,150-unit reorder,50-unit expiry example, FEFO allocation, unknown/expired exclusion, receipt timing, causal feature invariance, no-history forecasts, overstock, horizon suppression, festivals, review negation and seven-section UI navigation. Actual browser inspection checks chart rendering after restarting the old server to clear stale modules.
+Expired stock is not counted as usable. Unknown expiry dates need checking. If expiry is beyond the 30-day forecast, the app cannot estimate the final unsold amount reliably. A blank value therefore means unknown, not safe.
 
-Run locally with Python3.12 and requirements.txt. The first forecast fit is cached per snapshot. The prototype bounds100 products,100,000 rows/table and2,000 history days; no load-test SLA is claimed. A real deployment should move training to scheduled jobs, version datasets/models, separate tenant data, monitor drift and prediction coverage, and keep human purchasing approval.
+## Reviews and calendar data
 
-## Limitations and next experiments
+Reviews are checked using product names and simple English word rules. Phrases can suggest a request, unavailable product, variant or quality problem. This is not an LLM or a trained sentiment classifier. Mixed languages, sarcasm and reviews about several products can confuse it.
 
-Synthetic single-store data, pooled model selection, uncensored selection bias, uncertain incoming life, simplified lost-sales/backorder treatment, retrospectively imported public calendar and English-only rules limit generalization. Training targets overlap across historical origins; this is direct forecasting training, while chronological validation windows remain disjoint. No calibrated uncertainty interval, service-level guarantee, validated ROI or real integration is implemented.
+Google Calendar supplied a saved set of public festival dates. Personal appointments were not used. The app does not automatically keep that calendar up to date. Dates can be inspected, downloaded or applied in Data Management; local and tentative dates still need review.
 
-Next: consented real data, per-SKU residual analysis, robust censor-aware demand models, intermittent-demand comparators, promotion schedules, supplier uncertainty, policy-cost simulation and controlled pilots. Confirm original assessment timezone independently; no official timezone evidence was available.
+## Tools used to build the app
 
-## References
+| Tool | Its job |
+|---|---|
+| Python 3.12 | Runs the application code |
+| pandas and NumPy | Read and calculate with tables and numbers |
+| scikit-learn | Trains and compares forecasting models |
+| Streamlit | Builds the local web screens |
+| Plotly | Draws interactive charts |
+| SQLite | Saves a dataset locally when the user chooses to save |
+| pytest | Runs checks on code behavior |
+| ReportLab | Turns the written reports into PDFs |
 
-[1] Hyndman and Athanasopoulos, Forecasting: Principles and Practice, forecasting toolbox and time-series cross-validation, https://otexts.com/fpp3/toolbox.html (accessed2026-10-17).
+## What the tests prove, and what they do not
 
-[3] scikit-learn PoissonRegressor API, https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.PoissonRegressor.html (accessed2026-10-17).
+The latest code checks report **26 tests passed**. They cover data checks, stock calculations, expiry, future-data leakage, insufficient history, festival dates, seasonal examples and screen navigation. A passing test means a checked behavior worked in that example. It does not establish real-shop forecast accuracy.
 
-[4] Hyndman and Athanasopoulos, dynamic regression and harmonic terms, https://otexts.com/fpp3/dynamic-regression.html (accessed2026-10-17).
+The full forecasting evaluation was also run after the last model change. The numbers are saved in evaluation/metrics.json and the individual predictions in evaluation/backtest_predictions.csv. This language-only report rewrite does not change those results.
 
-[2] scikit-learn HistGradientBoostingRegressor API, https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html (implementation reference; installed version is pinned).
+## Main limitations
+
+The sales are generated, the store and product range are small, and seasonal assumptions are simplified. Festival effects are shared across named festivals for each product. The model can miss sudden changes and does not provide a tested probability range around each forecast. The app has no live Revio connection, no automatic ordering and no production sign-in system.
+
+## Reference documents
+
+scikit-learn PoissonRegressor documentation: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.PoissonRegressor.html
+
+scikit-learn HistGradientBoostingRegressor documentation: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html
+
+Forecasting: Principles and Practice, time-based testing: https://otexts.com/fpp3/toolbox.html
+
+These references explain the methods. The project's own code and saved evaluation establish which settings and results were actually used here.
