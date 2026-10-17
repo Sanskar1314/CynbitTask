@@ -9,3 +9,9 @@ tmp/
 .local/
 *.sqlite
 *.sqlite3
+
+# Keep assessment documents and assistant instructions local only.
+/reports/
+/docs/
+/AGENTS.md
+/agents.md

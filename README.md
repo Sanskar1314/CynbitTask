@@ -86,11 +86,11 @@ The suite includes data/persistence checks, business examples, causality, no-his
 
 ## Calendar integration
 
-The app uses imported public Holidays in India dates for 2024–2027, including Diwali on 8 November 2026. Inspect, download or apply these in Data Management. This is a snapshot, not continuous Google Calendar synchronization. No private appointments are used. [Calendar provenance and refresh](docs/Calendar_Integration.md).
+The app uses imported public Holidays in India dates for 2024–2027, including Diwali on 8 November 2026. Inspect, download or apply these in Data Management. This is a snapshot, not continuous Google Calendar synchronization. No private appointments are used. Source details are included in data/calendar/google_india_holidays.json.
 
 ## Dataset and decisions
 
-Seed42 creates1,020 daily observations per stocked SKU,12,240 sales rows,13 catalog products,24 batches,3 purchase orders,14 reviews and28 imported public calendar entries. Generate again with `python scripts/generate_data.py`. These are not Cynbit records. [Data card](docs/Data_Card.md) explains fields and assumptions.
+Seed42 creates1,020 daily observations per stocked SKU,12,240 sales rows,13 catalog products,24 batches,3 purchase orders,14 reviews and28 imported public calendar entries. Generate again with `python scripts/generate_data.py`. These are not Cynbit records.
 
 Protection = lead time + review period. Target = cumulative demand + safety buffer. Raw need accounts for eligible inventory, timed receipts, expiry loss and backorders; safe caps and pack/MOQ rules produce the draft. Example:20/day x11 days +30 safety -80 stock -20 incoming =150. The dashboard explains any constraint that reduces this quantity. Unknown expiry or insufficient planning horizon can withhold it.
 
@@ -102,24 +102,6 @@ Protection = lead time + review period. Target = cumulative demand + safety buff
 4. Show yogurt expiry risk, expired coffee, unknown chips expiry and biscuits overstock.
 5. Show sugar-free requests and explain why a new SKU gets no invented exact order.
 6. Inspect templates in Data Management and demonstrate incomplete-upload rejection.
-
-## Documentation and assessment package
-
-- [AI Opportunity Report](reports/AI_Opportunity_Report.md) / [PDF](reports/AI_Opportunity_Report.pdf): verified research, six opportunities, business fit and pilot plan.
-- [Technical Approach Report](reports/Technical_Approach_Report.md) / [PDF](reports/Technical_Approach_Report.pdf): architecture, model, evaluation and inventory mathematics.
-- [Complete Project Explanation](reports/Complete_Project_Explanation.md) / [PDF](reports/Complete_Project_Explanation.pdf): plain-English walkthrough, file-by-file guide, worked examples and 40 short interview answers.
-- [File Guide](docs/File_Guide.md): what each main file and CSV column means.
-- [Company Research](docs/Company_Research.md), [Engineering Decisions](docs/Engineering_Decision_Log.md), [Walkthrough](docs/Project_Walkthrough.md), [Interview Preparation](docs/Interview_Preparation.md).
-- [Project State](docs/PROJECT_STATE.md), [Execution Log](docs/Execution_Log.md), [Development Log](docs/Development_Log.md).
-
-Recommended submission package: repository URL, opportunity PDF, technical PDF, complete explanation PDF, README demo instructions and evaluation artifacts. No assessment submission or recruiter communication has been performed.
-
-Rebuild PDFs:
-
-```bash
-.venv/bin/python -m pip install -r requirements-reports.txt
-.venv/bin/python scripts/build_reports.py
-```
 
 ## Limits and production next steps
 
