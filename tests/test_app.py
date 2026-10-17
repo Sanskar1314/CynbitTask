@@ -2,7 +2,7 @@ from streamlit.testing.v1 import AppTest
 from src.data import ROOT
 
 def test_all_sections_and_invalid_upload():
-    app=AppTest.from_file(ROOT/'app/app.py',default_timeout=120).run()
+    app=AppTest.from_file(str(ROOT/'app/app.py'),default_timeout=120).run()
     assert not app.exception
     sections=app.sidebar.radio[0].options
     assert len(sections)==7
