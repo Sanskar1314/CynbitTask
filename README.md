@@ -82,6 +82,8 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 .venv/bin/python scripts/evaluate.py
 
 The suite includes data/persistence checks, business examples, causality, no-history, stockouts, expiry, receipt timing, constraints, reviews/events and navigation through every dashboard section. Rerun evaluation after model changes.
 
+![Unified forecast with calendar events](assets/forecast.png)
+
 ## Calendar integration
 
 The app uses imported public Holidays in India dates for 2024–2027, including Diwali on 8 November 2026. Inspect, download or apply these in Data Management. This is a snapshot, not continuous Google Calendar synchronization. No private appointments are used. [Calendar provenance and refresh](docs/Calendar_Integration.md).

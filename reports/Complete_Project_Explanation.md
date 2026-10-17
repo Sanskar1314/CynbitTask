@@ -16,10 +16,12 @@ This separation makes errors easier to understand. If demand is wrong, inspect t
 
 | Path | Purpose |
 |---|---|
-| app/app.py | Eight-section Streamlit UI, session state and cached computation |
+| app/app.py | Seven-section Streamlit UI, session state and cached computation |
 | src/data.py | Six-table validation, CSV handling, demand masking, summaries, SQLite |
 | src/forecasting.py | Origin-only features, training, prediction, metrics, chronological evaluation |
 | src/inventory.py | Periodic policy, constrained rounding, daily FEFO, explanations |
+| src/seasonal_model.py | Per-product joint seasonal, trend, weekday and festival count model |
+| src/calendar_data.py | Public calendar snapshot normalization and provenance |
 | src/seasonality.py | Monthly profile and comparable event windows |
 | src/reviews.py | Product alias and English intent rules |
 | scripts/generate_data.py | Seeded synthetic ledger and snapshot generator |
@@ -43,7 +45,7 @@ Suppose a shelf begins with three bottles and sells all three. Actual demand cou
 
 This is a pragmatic baseline, not a complete censored-demand estimator. Discarding constrained days may select unusually quiet days and underestimate demand. The generator records latent demand so evaluation can illustrate that issue, but production data cannot supply it directly.
 
-## What a model training row means
+## Legacy boosting comparator training rows
 
 Take an origin at the end of18 June2026 and a target seven days later. History features use observations no later than18 June. The target weekday/month and event proximity are known calendar features for25 June. The target is observed uncensored sales on25 June. A training cutoff earlier than25 June would forbid this row.
 
@@ -51,17 +53,17 @@ Take an origin at the end of18 June2026 and a target seven days later. History f
 
 No recursive prediction loop feeds yesterday's prediction into today's lag. This is direct multi-horizon regression: every horizon uses the same known origin history plus that horizon's calendar features. The tradeoff is more training rows and an explicit maximum30-day planning horizon.
 
-## Why there are three predictors
+## Why there are four predictors
 
-A model is useful only if it improves a credible simple approach. A28-day average and weekly seasonal naive forecast are cheap, understandable benchmarks. The three validation windows select the lowest pooled MAE. The final test window reports honest unseen performance. The selected gradient-boosted model is then refitted on all available historical data for the next30 days.
+A model is useful only if it improves a credible simple approach. A28-day average and weekly seasonal naive forecast are cheap, understandable benchmarks. Four validation windows select the lowest pooled MAE. Twelve later 30-day rolling test windows span 360 days. Seasonal Poisson regression wins selection and jointly fits each product’s smooth annual curve, weekdays, trend and dated festival effects. It is refitted on available history for the next30 days. With less than a full annual span it falls back to the average; without adequate recent history it withholds predictions.
 
 For uploaded data, demo results are irrelevant. The UI starts with the moving average. Running that snapshot's chronological evaluation selects a method for that snapshot. Very short histories cannot support the full evaluation protocol. Point forecasts have data-support labels, not claimed confidence intervals.
 
 ## How to read the measured results
 
-The selected model's final observed test MAE2.975 means its average absolute daily error per evaluated SKU is about three units. WAPE22.248% aggregates absolute errors relative to total actual units; it is not classification accuracy. Bias-0.163 means a small average underprediction on this synthetic test. RMSE4.064 gives more weight to larger errors.
+The selected seasonal model has rolling test MAE2.884, RMSE3.958, WAPE18.673% and bias-0.052. MAE is average absolute daily error in units; WAPE is aggregate numerical error, not classification accuracy.
 
-The moving-average MAE is3.599. Relative MAE reduction is about17.3%, but only on this simulation. There are353 evaluated product-days; seven stocked-product days are censored. The thirteenth SKU has no history and is excluded. The separate latent simulation diagnostic includes360 stocked-product days.
+The same-data boosting MAE is2.990 and average MAE3.389: relative improvements of3.5% and14.9%. There are4,201 observed product-days across360 test days. All four broad seasons improve, but not every SKU. The no-history SKU is excluded. Latent simulation diagnostics are separate. Old v1 metrics use different dates and a shorter protocol, so cannot be compared directly.
 
 ## Walk through the inventory engine
 
@@ -79,7 +81,7 @@ Eighty yogurt units expire after five future sellable days. Demand6/day consumes
 
 ## Seasons, events and reviews
 
-The monthly chart shows historical observed means, which can reflect seasonality and trend together. The event table compares pre-event demand against a preceding baseline and requires multiple adequately observed occurrences. It does not prove a festival caused demand growth. The bundled dates are fictional scenario entries and must be replaced for real use.
+The monthly chart shows historical observed means, which can reflect seasonality and trend together. The event table compares pre-event demand against a preceding baseline and requires multiple adequately observed occurrences. It does not prove a festival caused demand growth. The actual dates are imported public Google Calendar entries, with provenance in Data Management. This is a snapshot, not continuous synchronization. Seasonal evidence sits inside Product Demand Forecasting; there is one combined forecast.
 
 The review rule pipeline finds long catalog aliases first. A request for sugar-free cola maps to that SKU instead of ordinary cola. Availability, variant and quality intents can coexist. Evidence and original text remain visible. A no-history variant gets an investigation recommendation, not a fabricated forecast. The model never receives review counts.
 
@@ -106,6 +108,8 @@ This is a local single-store proof of concept, with no purchase execution, publi
 
 
 # Part II - Engineering decisions
+
+The initial sections below record v1 decisions and historical results. Revision2 sections supersede their model, calendar, evaluation and navigation choices; current metrics are in evaluation/metrics.json.
 
 2026-10-17.
 
@@ -138,6 +142,14 @@ WHAT: A six-table synthetic snapshot, availability ledger and origin-only featur
 
 WHAT: Streamlit session snapshots, content-keyed forecast caching and explicit SQLite save/load. WHY: a local assessment needs reproducible interactions without cloud infrastructure. HOW: all six tables validate before session replacement; SQLite writes a temporary database then replaces the saved file. UI upload controls and parser enforce a10MB limit. ALTERNATIVES: automatic database writes could persist accidental uploads; a hosted database would add unnecessary setup. DECISION: save only on an explicit button click and revalidate on load. EXAMPLE: an incomplete upload raises an error while the previous snapshot remains visible. LIMITATIONS: fixed local persistence is single-user; simultaneous writers, authentication and durable audit history are not addressed. Imported reviews update provenance even when numerical sales/evaluation remain unchanged.
 
+## Revision 2: unified seasonal forecasting and Google Calendar
+
+WHAT: Added per-SKU Poisson regression with two annual Fourier harmonics, weekday indicators, linear time trend and individual festival preparation windows in one joint demand model. WHY: the original global model's month-level signals and one-month test did not establish robustness across seasons; a separate seasonal workspace obscured the single forecast. HOW: standardized known calendar features are fitted jointly with regularization alpha0.03; coefficients differ by SKU. No universal seasonal multiplier or second forecast is added. The former gradient-boosted model remains an unchanged comparator. ALTERNATIVES: manually increase summer demand, add a separate festival forecast, or tune models on the final test; rejected. DECISION: compare fixed candidates using earlier validation origins, freeze model choice, then report rolling-origin test errors across360 days, by season, SKU and event window. EXAMPLE: cola and tea can learn different annual curves while a gifting product learns a stronger festival effect. LIMITATIONS: harmonic regression assumes repeatable smooth seasonality and log-linear trend; abrupt changes and weather remain unmodelled. One year and180 observed days are required for annual fitting; otherwise use the28-day baseline and label the fallback.
+
+WHAT: Imported public Holidays in India entries through the connected Google Calendar. WHY: replace fictional festival dates with the user's requested calendar source. HOW: keep only seven relevant festival families for2024–2027, preserve literal all-day dates and tentative labels, store public source links and retrieval date. Private, family and classroom events were not read. ALTERNATIVES: repeat fixed Gregorian dates or claim the connector automatically authenticates Streamlit; rejected. DECISION: an explicit imported snapshot, with calendar inspection/download/apply controls; no unattended live sync is claimed. EXAMPLE: Dussehra2026 is20October and Holi changes date each year. LIMITATIONS: calendar dates can change or differ regionally; historical calendar retrieval is retrospective rather than a timestamped historical feed.
+
+WHAT: Regenerated only the reproducible synthetic demo so simulated event demand aligns with imported calendar dates. WHY: relabelling fictional event-driven sales with real dates would corrupt evaluation. HOW: same seed and generator logic, public calendar inputs substituted; user uploads and local SQLite untouched. ALTERNATIVES: compare new errors directly with v1's different data; rejected. DECISION: all candidates are rerun on the identical v2 dataset; v1 metrics retained under evaluation/archive/v1. EXAMPLE: festival-related demand in2025 follows calendar Diwali20October rather than a fictional8November. LIMITATIONS: improvements remain simulation results and not evidence from a real retailer.
+
 
 # Part III - Interview preparation
 
@@ -145,13 +157,13 @@ Use these as explanations of this implementation, not claims of prior profession
 
 ## 30-second pitch
 
-StockSense is a proposed inventory intelligence module that could complement Revio. It helps a kirana owner forecast demand, review replenishment and identify expiry or excess stock. I compare simple baselines with gradient boosting using chronological validation, then apply transparent inventory rules. Customer reviews suggest product investigations but never become invented sales quantities. The working demo uses synthetic data, so its results are engineering evidence, not proof of real-store savings.
+StockSense is a proposed inventory intelligence module that could complement Revio. It helps a kirana owner forecast demand, review replenishment and identify expiry or excess stock. I compare simple baselines with seasonal Poisson regression and gradient boosting using chronological validation, then apply transparent inventory rules. Customer reviews suggest product investigations but never become invented sales quantities. The working demo uses synthetic data, so its results are engineering evidence, not proof of real-store savings.
 
 ## Two-minute explanation
 
 A retailer can have both stockouts and overstock. A sales forecast alone does not solve that because inventory may expire or arrive too late. StockSense validates sales, batches, orders, product rules, reviews and a calendar as one snapshot. It masks known stockout days rather than treating constrained sales as full demand.
 
-A global direct gradient-boosted model predicts each of the next30 days using only information available at the forecast origin. It is compared with a28-day average and weekly seasonal naive baseline. Three chronological validation windows select the model; a separate final30-day test reports performance. The selected model achieved MAE2.975 versus3.599 for the average on synthetic uncensored observations.
+One product-specific model combines season, weekdays, trend and festival dates into each daily forecast. Four validation windows select seasonal Poisson regression over boosting and two simple baselines. Twelve subsequent rolling windows test360 days. Synthetic observed MAE is2.884 versus2.990 for boosting and3.389 for the average.
 
 The rule engine then simulates earliest-expiry-first consumption and dated receipts. It uses lead time plus review period, a configurable buffer, and conservative shelf-life, capacity, pack and MOQ limits to produce draft quantities. Unsupported products and unknown expiry require investigation. Reviews highlight requested variants or availability issues without numerically inflating forecasts. A production pilot would need consented real data, verified dates, integration and measured inventory outcomes.
 
@@ -161,7 +173,7 @@ Minute1: Explain the merchant problem, Revio's advertised review-management cont
 
 Minute2: Open the six CSV templates. Explain availability-censored sales, recorded batch expiry, confirmed purchase orders and snapshot date. Show validation rejecting an incomplete upload without changing data.
 
-Minute3: Show lag/rolling/calendar features and direct horizons in src/forecasting.py. Explain why random splitting would leak future information. Display measured baseline comparisons and distinguish WAPE from accuracy.
+Minute3: Show joint annual, weekday, trend and festival features in src/seasonal_model.py and the retained boosting comparator in src/forecasting.py. Explain why random splitting would leak future information. Display measured baseline comparisons and distinguish WAPE from accuracy.
 
 Minute4: Work through220 demand +30 buffer -80 stock -20 incoming=150. Show FEFO and the80-unit yogurt/five-day example. Explain why pack rounding cannot exceed a safe cap and why an early shortage cannot be repaired by a late receipt.
 
@@ -182,7 +194,7 @@ Kirana owners and purchasing staff are the proposed users. Revio publicly descri
 It links measurable ML forecasts to an operational decision and makes it possible to test business mathematics separately from model quality.
 
 ### 5. Where did the data come from?
-A reproducible seed42 generator created all bundled records. None are Cynbit data. The app also accepts a validated user-supplied snapshot.
+A reproducible seed42 generator created the business records; public Google Calendar supplied actual festival dates. None are Cynbit data. The app also accepts a validated user-supplied snapshot.
 
 ### 6. Why not train directly on every sale?
 Sales can be limited by stock. A shelf with three units cannot reveal whether demand was three or fifteen. Known constrained days are masked, although this does not fully solve censored-demand bias.
@@ -190,17 +202,17 @@ Sales can be limited by stock. A shelf with three units cannot reveal whether de
 ### 7. How do you handle missing dates?
 They remain unknown after daily reindexing. They are not silently filled with zero demand.
 
-### 8. Why gradient boosting?
-It handles nonlinear tabular relationships and missing features with modest infrastructure. More importantly, it beat both tested baselines on chronological validation.
+### 8. Why seasonal Poisson regression?
+It models nonnegative daily counts with smooth annual, weekday, trend and event effects learned jointly for each product. It beat boosting and simple baselines on pooled validation. Boosting remains a useful nonlinear comparator.
 
 ### 9. Why not LSTM or a large language model?
 Neither is necessary for this small structured dataset. They add complexity, data needs or costs without demonstrated benefit here.
 
 ### 10. What are the main features?
-Past lags and rolling statistics, missingness, product identity, horizon, target weekday, cyclic month and known event proximity. No future stock, future sales or latent demand enters the predictors.
+The selected model uses two annual sine/cosine harmonics, weekday, trend and festival-specific preparation windows. The boosting comparator uses lags, rolling statistics, missingness, product identity, horizon, weekday, cyclic month and event proximity. No future stock, future sales or latent demand enters the predictors.
 
 ### 11. What does direct multi-horizon mean?
-Each future day gets its own feature row from the same known origin history. Predictions are not fed back recursively as actual lags.
+In the retained boosting comparator, each future day gets its own feature row from the same known origin history. Predictions are not fed back recursively as actual lags.
 
 ### 12. How is leakage prevented?
 Features stop at the origin, labels stop at the training cutoff, validation follows training chronologically, and the final test does not choose the model. A causality test changes future sales and checks that earlier features stay identical.
@@ -212,16 +224,16 @@ A28-day observed average and a repeated last week. Missing weekly observations u
 The selection rule chooses it. Model complexity is not the objective; validation performance is.
 
 ### 15. What are the measured results?
-Final synthetic observed test MAE2.975, RMSE4.064, WAPE22.248%, bias-0.163 for boosting; average baseline MAE3.599. There are353 valid product-days, not real customer outcomes.
+Seasonal Poisson rolling test MAE2.884, RMSE3.958, WAPE18.673%, bias-0.052. Same-data boosting MAE2.990; average MAE3.389. There are4,201 valid product-days across360 days, not real customer outcomes.
 
-### 16. Is WAPE22% the same as78% accuracy?
+### 16. Is WAPE19% the same as81% accuracy?
 No. WAPE is aggregate absolute numerical error divided by aggregate actual units. Subtracting it from100 does not produce classification accuracy.
 
 ### 17. Why report bias?
 Persistent underprediction can cause shortages even when average absolute error looks acceptable. Positive bias means overprediction; negative means underprediction.
 
 ### 18. How are festivals handled?
-Known event proximity is a model feature. Descriptive historical comparisons require multiple observed occurrences. The bundled calendar is fictional and must be replaced with verified local dates.
+Festival preparation windows are learned within the same forecast using actual public Google Calendar dates imported17 October2026. No second seasonal forecast or blanket uplift is added. The app uses a snapshot; regional/tentative dates need review.
 
 ### 19. Is the event uplift causal?
 No. Trend, promotions and overlapping events can confound it. The evidence table does not apply an extra forecast multiplier.
@@ -266,7 +278,7 @@ All six tables pass schema, dates, keys, numeric and reference checks before rep
 It provides simple optional local persistence without a separate service. It is not a substitute for tenant isolation or authenticated production storage.
 
 ### 33. What testing did you perform?
-Numerical business-rule tests, invalid-data and persistence checks, feature causality, no-history/expiry/receipt/event/review cases and automated navigation of all eight UI sections. Evaluation is executed separately and saved.
+Numerical business-rule tests, invalid-data and persistence checks, feature causality, no-history/expiry/receipt/event/review cases and automated navigation of all seven UI sections. Evaluation is executed separately and saved.
 
 ### 34. What is the largest limitation?
 External validity: synthetic data can only show that the approach works on the simulation. Real-store data quality, demand patterns and supplier behavior may differ substantially.
@@ -278,7 +290,7 @@ Confirm Cynbit fit and interfaces, collect consented real data, run shadow recom
 Compare stockout hours, expiry cost, inventory holding and owner review time against a defined baseline while controlling for promotions, seasons and supply changes. Forecast MAE alone is insufficient.
 
 ### 37. What would you change if real demand is intermittent?
-Evaluate intermittent-demand methods and probabilistic/count models against the same chronological protocol. Do not assume the current global model will win.
+Evaluate intermittent-demand methods and probabilistic/count models against the same chronological protocol. Do not assume the current selected model will win.
 
 ### 38. Can this application place orders or be used publicly today?
 No orders are placed. It runs locally without authentication. A public production service requires additional access controls, monitoring, consent and integration work.
