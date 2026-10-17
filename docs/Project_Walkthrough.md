@@ -49,15 +49,15 @@ No recursive prediction loop feeds yesterday's prediction into today's lag. This
 
 ## Why there are four predictors
 
-A model is useful only if it improves a credible simple approach. A28-day average and weekly seasonal naive forecast are cheap, understandable benchmarks. Four validation windows select the lowest pooled MAE. Twelve later 30-day rolling test windows span 360 days. Seasonal Poisson regression wins selection and jointly fits each product’s smooth annual curve, weekdays, trend and dated festival effects. It is refitted on available history for the next30 days. With less than a full annual span it falls back to the average; without adequate recent history it withholds predictions.
+A model is useful only if it improves a credible simple approach. A28-day average and weekly seasonal naive forecast are cheap, understandable benchmarks. Four validation windows select the lowest pooled MAE. Twelve later 30-day rolling test windows span 360 days. Seasonal Poisson regression wins selection and jointly fits each product’s smooth annual curve, weekdays, trend and a pooled dated festival effect. It is refitted on available history for the next30 days. With less than a full annual span it falls back to the average; without adequate recent history it withholds predictions.
 
 For uploaded data, demo results are irrelevant. The UI starts with the moving average. Running that snapshot's chronological evaluation selects a method for that snapshot. Very short histories cannot support the full evaluation protocol. Point forecasts have data-support labels, not claimed confidence intervals.
 
 ## How to read the measured results
 
-The selected seasonal model has rolling test MAE2.884, RMSE3.958, WAPE18.673% and bias-0.052. MAE is average absolute daily error in units; WAPE is aggregate numerical error, not classification accuracy.
+The selected seasonal model has rolling test MAE2.860, RMSE3.921, WAPE18.520% and bias-0.040. MAE is average absolute daily error in units; WAPE is aggregate numerical error, not classification accuracy.
 
-The same-data boosting MAE is2.990 and average MAE3.389: relative improvements of3.5% and14.9%. There are4,201 observed product-days across360 test days. All four broad seasons improve, but not every SKU. The no-history SKU is excluded. Latent simulation diagnostics are separate. Old v1 metrics use different dates and a shorter protocol, so cannot be compared directly.
+The same-data boosting MAE is2.964 and average MAE3.374: relative improvements of3.5% and15.2%. There are4,200 observed product-days across360 test days. All four broad seasons improve, but not every SKU. The no-history SKU is excluded. Latent simulation diagnostics are separate. Old v1 metrics use different dates and a shorter protocol, so cannot be compared directly.
 
 ## Walk through the inventory engine
 

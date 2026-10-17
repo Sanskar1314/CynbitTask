@@ -1,6 +1,6 @@
 # StockSense project state
 
-Updated 2026-10-17, revision2. User requested one season-aware demand forecast and actual Google Calendar festival dates.
+Updated 2026-10-17, revision3. User requested one season-aware demand forecast and actual Google Calendar festival dates.
 
 ## Implemented
 
@@ -12,14 +12,24 @@ Updated 2026-10-17, revision2. User requested one season-aware demand forecast a
 
 ## Measured verification
 
-25 pytest tests pass. Full evaluation executed: four validation origins choose seasonal Poisson by MAE3.088 vs boosting3.117. Twelve later disjoint30-day windows span360 test days. Observed synthetic n4,201: MAE2.884, RMSE3.958, WAPE18.673%, bias-0.052. Same-data boosting MAE2.990, average3.389. Relative reductions3.5% and14.9%; all four broad season groups improve, not every SKU. No merchant accuracy or ROI established. Calendar retrieval is retrospective, not a historical point-in-time feed.
+26 pytest tests pass. Full evaluation executed: four validation origins choose seasonal Poisson by MAE3.088 vs boosting3.178. Twelve later disjoint30-day windows span360 test days. Observed synthetic n4,200: MAE2.860, RMSE3.921, WAPE18.520%, bias-0.040. Same-data boosting MAE2.964, average3.374. Relative reductions3.5% and15.2%; all four broad season groups improve, not every SKU. No merchant accuracy or ROI established. Calendar retrieval is retrospective, not a historical point-in-time feed.
 
 ## Completion
 
-Live browser verified: seven sections, seasonal model selected, one future line with Dussehra/Diwali markers, integrated explanation and public calendar controls. Forecast/dashboard screenshots refreshed. All25 report pages rendered and visually checked (opportunity5, technical7, explanation13). Latest suite25 passed; no known failing checks. Local app http://127.0.0.1:8501/. README includes launch/evaluation commands. User .DS_Store change preserved and excluded from commits.
+Live browser verified: seven sections, seasonal model selected, one future line with Dussehra/Diwali markers, integrated explanation and public calendar controls. Forecast/dashboard screenshots refreshed. All26 report pages rendered and visually checked (opportunity5, technical7, explanation14). Latest suite26 passed; no known failing checks. Local app http://127.0.0.1:8501/. README includes launch/evaluation commands. User .DS_Store change preserved and excluded from commits.
 
 ## Git and boundaries
 
-Repository https://github.com/Sanskar1314/CynbitTask.git, main. Previous verified milestonefffff03a7c8b829a924d114a177cce28033f48bd. Commit meaningful milestones, push immediately, verify remote HEAD; no force push. No public deployment, assessment submission, recruiter contact or visibility changes authorized. Logs record previous hashes to avoid recursion.
+Repository https://github.com/Sanskar1314/CynbitTask.git, main. Previous verified milestone3c633e9df1550936af7023fa386f2dc2caf0cc2a. Commit meaningful milestones, push immediately, verify remote HEAD; no force push. No public deployment, assessment submission, recruiter contact or visibility changes authorized. Logs record previous hashes to avoid recursion.
 
 Production requires consented real data, regional calendar maintenance, supported POS/Revio integration, shadow-policy evaluation, authenticated tenant separation and calibrated uncertainty. Current synthetic single-store results do not establish production readiness.
+
+## Revision3: product-pattern correction
+
+The previous synthetic tea/coffee curve incorrectly peaked near October because it inverted the summer beverage curve. The generator now uses an explicit January-centered winter curve for hot drinks. This is a declared synthetic scenario correction, not evidence about a real merchant. Only bundled synthetic records were regenerated; user uploads and saved snapshots were untouched.
+
+With only two or three occurrences per named festival, separate event coefficients overfit noise: tea received an unjustified Diwali dip. The model now pools festival preparation windows within each SKU while jointly fitting season, weekday and trend. This preserves a learned gifting uplift without forcing every product upward. Different named-festival effects cannot be estimated independently by this pooled model; richer history should support future hierarchical estimation.
+
+Product checks: packaged sweets Diwali mean7.95 units/day versus4.20 on the same dates with event indicators omitted. This omitted-event value is a model diagnostic, not a second user-facing forecast or causal estimate. Tea and coffee seasonal expectations rise from October through December. Both remain within10% of their no-event values during Diwali in the synthetic no-hot-drink-festival-effect scenario. Tests cover both gifting SKUs, both hot drinks, Dussehra and Diwali. Shaded preparation windows and a summary of the same forecast clarify festival versus nonfestival days.
+
+Full evaluation rerun: seasonal model test MAE2.860 versus same-data boosting2.964, n4,200 across360 days. These values cannot demonstrate improvement over v2 because the synthetic data changed. Repeated development against this simulation is not an untouched external benchmark. Prior metrics are retained in evaluation/archive/v2.

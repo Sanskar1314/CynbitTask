@@ -34,11 +34,11 @@ def reset(tables,source):
 
 if 'tables' not in st.session_state:reset(load_demo(),'Synthetic demo')
 # Refresh only the bundled demo after its data/model revision; preserve uploaded snapshots.
-if st.session_state.source=='Synthetic demo' and st.session_state.get('demo_version')!=2:
-    reset(load_demo(),'Synthetic demo');st.session_state.demo_version=2
+if st.session_state.source=='Synthetic demo' and st.session_state.get('demo_version')!=3:
+    reset(load_demo(),'Synthetic demo');st.session_state.demo_version=3
 t=st.session_state.tables;as_of=t['sales'].date.max();demo=st.session_state.source=='Synthetic demo'
 report=json.loads((ROOT/'evaluation/metrics.json').read_text()) if demo else st.session_state.get('custom_evaluation')
-if report and report.get('version')!=2:report=None
+if report and report.get('version')!=3:report=None
 method=report['selected_method'] if report else METHODS[0]
 with st.sidebar:
     st.title('StockSense')
@@ -83,19 +83,30 @@ elif section=='Product Demand Forecasting':
         c=st.columns(3);c[0].metric(f'Next {h} days',f'{future.prediction.sum():.1f} units');c[1].metric('Selected model',future.method.iloc[0]);c[2].metric('Data support',future.support.iloc[0])
         fig=go.Figure();fig.add_trace(go.Scatter(x=actual.date,y=actual.quantity_sold,name='Recorded sales',line=dict(color='#778995')));fig.add_trace(go.Scatter(x=future.date,y=future.prediction,name='Forecast',line=dict(color='#087e8b',dash='dash')));
         for event in t['festivals'][t['festivals'].festival_date.between(as_of+pd.Timedelta(days=1),as_of+pd.Timedelta(days=h))].itertuples():
+            start=max(as_of+pd.Timedelta(days=1),event.festival_date-pd.Timedelta(days=7))
+            fig.add_vrect(x0=start,x1=event.festival_date,fillcolor='#e9b267',opacity=.14,line_width=0,layer='below')
             fig.add_shape(type='line',x0=event.festival_date,x1=event.festival_date,y0=0,y1=1,yref='paper',line=dict(color='#c46238',dash='dot'))
             fig.add_annotation(x=event.festival_date,y=1,yref='paper',text=event.festival_name,showarrow=False,textangle=-45)
-        fig.update_layout(yaxis_title='Units / day',legend=dict(orientation='h'));st.plotly_chart(fig,width='stretch')
+        fig.update_layout(title=t['products'].set_index('product_id').loc[pid,'product_name']+' · Recorded sales and forecast',yaxis_title='Units / day',legend=dict(orientation='h'));st.plotly_chart(fig,width='stretch')
         st.caption('Point forecasts, not guarantees. Support labels reflect recent observed history, not calibrated probabilities. Recorded sales can be censored by stockouts.')
     st.subheader('Seasons and events included in this forecast')
     if future.method.eq(SEASONAL_METHOD).any():
-        st.write('One demand forecast feeds purchasing and expiry planning. Annual patterns, weekdays, trend and dated festivals are learned together; no extra seasonal forecast or manual festival multiplier is added.')
+        st.write('One demand forecast feeds purchasing and expiry planning. Annual patterns, weekdays, trend and dated festivals are learned together. Festival effects are pooled across past events for each product because individual festivals have few observations; no extra seasonal forecast or manual festival multiplier is added.')
     else:
         st.write('One demand forecast feeds purchasing and expiry planning. The selected method is shown above and in the forecast table. Baselines do not learn annual or festival effects; the calendar below is context. Run snapshot evaluation to compare seasonal models when sufficient history is available.')
     st.caption('Calendar period: '+', '.join(dict.fromkeys(future.date.map(season_label)))+'. These labels are broad Indian calendar groupings, not local weather observations.')
     events=t['festivals'][t['festivals'].festival_date.between(as_of+pd.Timedelta(days=1),as_of+pd.Timedelta(days=h+7))].sort_values('festival_date')
     if events.empty:st.info('No imported festival falls in this forecast or its seven-day preparation window.')
-    else:table(events)
+    else:
+        table(events)
+        windows=[]
+        for event in events.itertuples():
+            start=max(as_of+pd.Timedelta(days=1),event.festival_date-pd.Timedelta(days=7))
+            end=min(as_of+pd.Timedelta(days=h),event.festival_date)
+            values=future[future.date.between(start,end)].prediction.dropna()
+            if len(values):windows.append({'Festival':event.festival_name,'Forecast window':f'{start:%d %b} – {end:%d %b}','Mean forecast units/day':round(values.mean(),1)})
+        if windows:table(pd.DataFrame(windows))
+        st.caption('Shaded days are the seven-day preparation period through festival day. This table summarizes the same forecast line. A fall after a festival window ends is different from a fall during the festival. Daily points can also vary by weekday.')
     with st.expander('Historical seasonal evidence (observations, not another forecast)'):
         profile=seasonal_profile(t,pid)
         if profile.empty:st.info('No sales history to estimate seasonality.')

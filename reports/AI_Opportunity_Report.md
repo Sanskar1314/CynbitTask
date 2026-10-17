@@ -60,7 +60,7 @@ The proposed combination is transparent forecast selection, expiry-aware batch s
 
 Implemented: synthetic data generation, schema checks, four forecasting candidates, chronological evaluation, FEFO expiry simulation, periodic-review quantities, receipt-life/storage caps, descriptive seasonal/event analysis, English review rules, seven dashboard sections, CSV export/import and SQLite persistence.
 
-Measured on 4,201 synthetic uncensored product-days across 360 rolling test days: seasonal Poisson MAE 2.884, RMSE 3.958, WAPE 18.673%, bias -0.052. On the same revised data, boosting MAE is 2.990 and moving-average MAE is 3.389. The 3.5% and 14.9% respective reductions are simulation-only, not business ROI. No-history products receive no exact demand forecast.
+Measured on 4,200 synthetic uncensored product-days across 360 rolling test days: seasonal Poisson MAE 2.860, RMSE 3.921, WAPE 18.520%, bias -0.040. On the same revised data, boosting MAE is 2.964 and moving-average MAE is 3.374. The 3.5% and 15.2% respective reductions are simulation-only, not business ROI. No-history products receive no exact demand forecast.
 
 ## Risks and limitations
 

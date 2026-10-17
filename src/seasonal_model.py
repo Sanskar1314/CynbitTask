@@ -6,10 +6,9 @@ from sklearn.linear_model import PoissonRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from src.data import demand_series
-from src.calendar_data import EVENT_NAMES
 
 SEASONAL_METHOD = 'Seasonal Poisson regression'
-SEASONAL_FEATURES = ['trend_years', 'annual_sin1', 'annual_cos1', 'annual_sin2', 'annual_cos2'] + [f'weekday_{i}' for i in range(1,7)] + [f'pre8_{name}' for name in EVENT_NAMES] + ['pre8_other_event']
+SEASONAL_FEATURES = ['trend_years', 'annual_sin1', 'annual_cos1', 'annual_sin2', 'annual_cos2'] + [f'weekday_{i}' for i in range(1,7)] + ['pre8_any_event']
 
 def calendar_features(dates, festivals):
     dates = pd.DatetimeIndex(dates)
@@ -19,11 +18,11 @@ def calendar_features(dates, festivals):
     columns = [trend, np.sin(2*np.pi*phase), np.cos(2*np.pi*phase), np.sin(4*np.pi*phase), np.cos(4*np.pi*phase)]
     columns += [(dates.dayofweek==i).astype(float) for i in range(1,7)]
     days = dates.to_numpy(dtype='datetime64[D]')
-    for name in list(EVENT_NAMES)+[None]:
-        match = festivals.festival_name.eq(name) if name else ~festivals.festival_name.isin(EVENT_NAMES)
-        events = festivals.loc[match,'festival_date'].to_numpy(dtype='datetime64[D]')
-        delta = events[None,:]-days[:,None]
-        columns.append(((delta>=np.timedelta64(0,'D'))&(delta<=np.timedelta64(7,'D'))).any(axis=1).astype(float))
+    # Pool event windows per product: only 2–3 occurrences of each named festival
+    # are available. Separate coefficients were fitting noise (notably tea/Diwali).
+    events = festivals.festival_date.to_numpy(dtype='datetime64[D]')
+    delta = events[None,:]-days[:,None]
+    columns.append(((delta>=np.timedelta64(0,'D'))&(delta<=np.timedelta64(7,'D'))).any(axis=1).astype(float))
     return np.column_stack(columns)
 
 @dataclass

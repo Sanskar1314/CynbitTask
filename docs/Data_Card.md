@@ -9,3 +9,13 @@ Six CSVs form one atomic snapshot. `src/data.py:SCHEMAS` defines required header
 `shelf_life_days` means assumed remaining shelf life of a **new receipt**, not a manufacturer's official expiry. Existing batch dates are authoritative recorded inputs. Unknown or expired batches require review and are excluded from saleable stock. Max stock is unit capacity, not monetary budget. Pack size/MOQ apply to units. Revenue uses historical sale price, not current catalog price. Historical weekly/monthly demand values are 7/30-day equivalents of the latest 28-day observed mean, not calendar-period totals.
 
 Limits: 10 MB per CSV, 100 products, 100,000 rows per table, 2,000 days of history; lead time at most 30 days. These bound a local demonstration, not a production service. SQLite is local explicit persistence, without multiuser access control. Never upload private customer data to a publicly hosted instance.
+
+## Revision3: product-pattern correction
+
+The previous synthetic tea/coffee curve incorrectly peaked near October because it inverted the summer beverage curve. The generator now uses an explicit January-centered winter curve for hot drinks. This is a declared synthetic scenario correction, not evidence about a real merchant. Only bundled synthetic records were regenerated; user uploads and saved snapshots were untouched.
+
+With only two or three occurrences per named festival, separate event coefficients overfit noise: tea received an unjustified Diwali dip. The model now pools festival preparation windows within each SKU while jointly fitting season, weekday and trend. This preserves a learned gifting uplift without forcing every product upward. Different named-festival effects cannot be estimated independently by this pooled model; richer history should support future hierarchical estimation.
+
+Product checks: packaged sweets Diwali mean7.95 units/day versus4.20 on the same dates with event indicators omitted. This omitted-event value is a model diagnostic, not a second user-facing forecast or causal estimate. Tea and coffee seasonal expectations rise from October through December. Both remain within10% of their no-event values during Diwali in the synthetic no-hot-drink-festival-effect scenario. Tests cover both gifting SKUs, both hot drinks, Dussehra and Diwali. Shaded preparation windows and a summary of the same forecast clarify festival versus nonfestival days.
+
+Full evaluation rerun: seasonal model test MAE2.860 versus same-data boosting2.964, n4,200 across360 days. These values cannot demonstrate improvement over v2 because the synthetic data changed. Repeated development against this simulation is not an untouched external benchmark. Prior metrics are retained in evaluation/archive/v2.

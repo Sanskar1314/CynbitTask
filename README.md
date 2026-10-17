@@ -66,12 +66,12 @@ Four chronological validation windows select Seasonal Poisson regression by pool
 
 | Method | Validation MAE | Test MAE | Test RMSE | Test WAPE | Test bias |
 |---|---:|---:|---:|---:|---:|
-| Seasonal Poisson regression | 3.088 | 2.884 | 3.958 | 18.673% | -0.052 |
-| HistGradientBoosting | 3.117 | 2.990 | 4.105 | 19.353% | -0.284 |
-| Moving average 28d | 3.439 | 3.389 | 4.750 | 21.938% | -0.047 |
-| Weekly seasonal naive | 4.213 | 4.240 | 5.852 | 27.446% | -0.236 |
+| Seasonal Poisson regression | 3.088 | 2.860 | 3.921 | 18.520% | -0.040 |
+| HistGradientBoosting | 3.178 | 2.964 | 4.066 | 19.193% | -0.313 |
+| Moving average 28d | 3.507 | 3.374 | 4.721 | 21.847% | -0.040 |
+| Weekly seasonal naive | 4.230 | 4.133 | 5.712 | 26.765% | -0.208 |
 
-Test count: 4,201 observed product-days. The selected model reduces MAE by 3.5% versus boosting and 14.9% versus the average on the same revised data. All four broad seasonal groups improve; this does not imply every SKU improves. Separate latent simulation diagnostic: n4,320, MAE2.925. WAPE is not classification accuracy. Old v1 results use different data and a shorter protocol and are archived in evaluation/archive/v1; they are not a direct before/after comparison.
+Test count: 4,200 observed product-days. The selected model reduces MAE by 3.5% versus boosting and 15.2% versus the average on the same revised data. All four broad seasonal groups improve; this does not imply every SKU improves. Separate latent simulation diagnostic: n4,320, MAE2.901. WAPE is not classification accuracy. Old v1/v2 results use different data and/or protocol and are archived in evaluation/archive; they are not a direct before/after comparison.
 
 Full evidence: [metrics](evaluation/metrics.json), [predictions](evaluation/backtest_predictions.csv).
 

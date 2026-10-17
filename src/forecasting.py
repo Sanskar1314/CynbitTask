@@ -105,12 +105,12 @@ def evaluate(tables):
     for (method,pid),g in test.groupby(['candidate','product_id']):product.append(dict(method=method,product_id=pid,**metrics(g.actual,g.prediction)))
     for (method,event),g in test.groupby(['candidate','event_window']):events.append(dict(method=method,event_window=bool(event),**metrics(g.actual,g.prediction)))
     latent=test.merge(tables['sales'][['date','product_id','simulated_demand']],on=['date','product_id'],how='left') if 'simulated_demand' in tables['sales'] else None
-    report={'version':2,'selected_method':selected,
+    report={'version':3,'selected_method':selected,
       'selection':'Lowest pooled validation MAE before the test period; fixed candidate configurations. Test uses expanding rolling origins with choice frozen. Seasonal model falls back to moving average when annual history is insufficient.',
       'as_of':str(end.date()),'validation_origins':[str((end-pd.Timedelta(days=d)).date()) for d in validation_days],
       'test_origins':[str((end-pd.Timedelta(days=d)).date()) for d in test_days],
       'season_coverage':'12 disjoint 30-day test windows across 360 days' if long_history else 'Short-history protocol; not all seasons represented',
       'results':results,'by_season':seasonal,'by_product':product,'by_event_window':events,
       'synthetic_latent_test':{m:metrics(g.simulated_demand,g.prediction) for m,g in latent.groupby('candidate')} if latent is not None else {},
-      'limitations':'Sales remain synthetic. All candidates evaluated on the same regenerated Google-calendar-aligned data. Original model is retained as a comparator; v1 results use different data/protocol and are not directly comparable. Calendar snapshot was retrieved retrospectively, not a historical point-in-time feed. Observed scores exclude censored days; no real-store accuracy or ROI established.'}
+      'limitations':'Sales remain synthetic. All candidates evaluated on the same regenerated Google-calendar-aligned data. Original model is retained as a comparator; v1/v2 results use different data and/or protocol and are not directly comparable. Calendar snapshot was retrieved retrospectively, not a historical point-in-time feed. Observed scores exclude censored days; no real-store accuracy or ROI established.'}
     return report,detail

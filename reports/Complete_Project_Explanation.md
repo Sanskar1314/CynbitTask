@@ -55,15 +55,15 @@ No recursive prediction loop feeds yesterday's prediction into today's lag. This
 
 ## Why there are four predictors
 
-A model is useful only if it improves a credible simple approach. A28-day average and weekly seasonal naive forecast are cheap, understandable benchmarks. Four validation windows select the lowest pooled MAE. Twelve later 30-day rolling test windows span 360 days. Seasonal Poisson regression wins selection and jointly fits each product’s smooth annual curve, weekdays, trend and dated festival effects. It is refitted on available history for the next30 days. With less than a full annual span it falls back to the average; without adequate recent history it withholds predictions.
+A model is useful only if it improves a credible simple approach. A28-day average and weekly seasonal naive forecast are cheap, understandable benchmarks. Four validation windows select the lowest pooled MAE. Twelve later 30-day rolling test windows span 360 days. Seasonal Poisson regression wins selection and jointly fits each product’s smooth annual curve, weekdays, trend and a pooled dated festival effect. It is refitted on available history for the next30 days. With less than a full annual span it falls back to the average; without adequate recent history it withholds predictions.
 
 For uploaded data, demo results are irrelevant. The UI starts with the moving average. Running that snapshot's chronological evaluation selects a method for that snapshot. Very short histories cannot support the full evaluation protocol. Point forecasts have data-support labels, not claimed confidence intervals.
 
 ## How to read the measured results
 
-The selected seasonal model has rolling test MAE2.884, RMSE3.958, WAPE18.673% and bias-0.052. MAE is average absolute daily error in units; WAPE is aggregate numerical error, not classification accuracy.
+The selected seasonal model has rolling test MAE2.860, RMSE3.921, WAPE18.520% and bias-0.040. MAE is average absolute daily error in units; WAPE is aggregate numerical error, not classification accuracy.
 
-The same-data boosting MAE is2.990 and average MAE3.389: relative improvements of3.5% and14.9%. There are4,201 observed product-days across360 test days. All four broad seasons improve, but not every SKU. The no-history SKU is excluded. Latent simulation diagnostics are separate. Old v1 metrics use different dates and a shorter protocol, so cannot be compared directly.
+The same-data boosting MAE is2.964 and average MAE3.374: relative improvements of3.5% and15.2%. There are4,200 observed product-days across360 test days. All four broad seasons improve, but not every SKU. The no-history SKU is excluded. Latent simulation diagnostics are separate. Old v1 metrics use different dates and a shorter protocol, so cannot be compared directly.
 
 ## Walk through the inventory engine
 
@@ -150,6 +150,16 @@ WHAT: Imported public Holidays in India entries through the connected Google Cal
 
 WHAT: Regenerated only the reproducible synthetic demo so simulated event demand aligns with imported calendar dates. WHY: relabelling fictional event-driven sales with real dates would corrupt evaluation. HOW: same seed and generator logic, public calendar inputs substituted; user uploads and local SQLite untouched. ALTERNATIVES: compare new errors directly with v1's different data; rejected. DECISION: all candidates are rerun on the identical v2 dataset; v1 metrics retained under evaluation/archive/v1. EXAMPLE: festival-related demand in2025 follows calendar Diwali20October rather than a fictional8November. LIMITATIONS: improvements remain simulation results and not evidence from a real retailer.
 
+## Revision3: product-pattern correction
+
+The previous synthetic tea/coffee curve incorrectly peaked near October because it inverted the summer beverage curve. The generator now uses an explicit January-centered winter curve for hot drinks. This is a declared synthetic scenario correction, not evidence about a real merchant. Only bundled synthetic records were regenerated; user uploads and saved snapshots were untouched.
+
+With only two or three occurrences per named festival, separate event coefficients overfit noise: tea received an unjustified Diwali dip. The model now pools festival preparation windows within each SKU while jointly fitting season, weekday and trend. This preserves a learned gifting uplift without forcing every product upward. Different named-festival effects cannot be estimated independently by this pooled model; richer history should support future hierarchical estimation.
+
+Product checks: packaged sweets Diwali mean7.95 units/day versus4.20 on the same dates with event indicators omitted. This omitted-event value is a model diagnostic, not a second user-facing forecast or causal estimate. Tea and coffee seasonal expectations rise from October through December. Both remain within10% of their no-event values during Diwali in the synthetic no-hot-drink-festival-effect scenario. Tests cover both gifting SKUs, both hot drinks, Dussehra and Diwali. Shaded preparation windows and a summary of the same forecast clarify festival versus nonfestival days.
+
+Full evaluation rerun: seasonal model test MAE2.860 versus same-data boosting2.964, n4,200 across360 days. These values cannot demonstrate improvement over v2 because the synthetic data changed. Repeated development against this simulation is not an untouched external benchmark. Prior metrics are retained in evaluation/archive/v2.
+
 
 # Part III - Interview preparation
 
@@ -163,7 +173,7 @@ StockSense is a proposed inventory intelligence module that could complement Rev
 
 A retailer can have both stockouts and overstock. A sales forecast alone does not solve that because inventory may expire or arrive too late. StockSense validates sales, batches, orders, product rules, reviews and a calendar as one snapshot. It masks known stockout days rather than treating constrained sales as full demand.
 
-One product-specific model combines season, weekdays, trend and festival dates into each daily forecast. Four validation windows select seasonal Poisson regression over boosting and two simple baselines. Twelve subsequent rolling windows test360 days. Synthetic observed MAE is2.884 versus2.990 for boosting and3.389 for the average.
+One product-specific model combines season, weekdays, trend and festival dates into each daily forecast. Four validation windows select seasonal Poisson regression over boosting and two simple baselines. Twelve subsequent rolling windows test360 days. Synthetic observed MAE is2.860 versus2.964 for boosting and3.374 for the average.
 
 The rule engine then simulates earliest-expiry-first consumption and dated receipts. It uses lead time plus review period, a configurable buffer, and conservative shelf-life, capacity, pack and MOQ limits to produce draft quantities. Unsupported products and unknown expiry require investigation. Reviews highlight requested variants or availability issues without numerically inflating forecasts. A production pilot would need consented real data, verified dates, integration and measured inventory outcomes.
 
@@ -209,7 +219,7 @@ It models nonnegative daily counts with smooth annual, weekday, trend and event 
 Neither is necessary for this small structured dataset. They add complexity, data needs or costs without demonstrated benefit here.
 
 ### 10. What are the main features?
-The selected model uses two annual sine/cosine harmonics, weekday, trend and festival-specific preparation windows. The boosting comparator uses lags, rolling statistics, missingness, product identity, horizon, weekday, cyclic month and event proximity. No future stock, future sales or latent demand enters the predictors.
+The selected model uses two annual sine/cosine harmonics, weekday, trend and a pooled festival preparation window. The boosting comparator uses lags, rolling statistics, missingness, product identity, horizon, weekday, cyclic month and event proximity. No future stock, future sales or latent demand enters the predictors.
 
 ### 11. What does direct multi-horizon mean?
 In the retained boosting comparator, each future day gets its own feature row from the same known origin history. Predictions are not fed back recursively as actual lags.
@@ -224,7 +234,7 @@ A28-day observed average and a repeated last week. Missing weekly observations u
 The selection rule chooses it. Model complexity is not the objective; validation performance is.
 
 ### 15. What are the measured results?
-Seasonal Poisson rolling test MAE2.884, RMSE3.958, WAPE18.673%, bias-0.052. Same-data boosting MAE2.990; average MAE3.389. There are4,201 valid product-days across360 days, not real customer outcomes.
+Seasonal Poisson rolling test MAE2.860, RMSE3.921, WAPE18.520%, bias-0.040. Same-data boosting MAE2.964; average MAE3.374. There are4,200 valid product-days across360 days, not real customer outcomes.
 
 ### 16. Is WAPE19% the same as81% accuracy?
 No. WAPE is aggregate absolute numerical error divided by aggregate actual units. Subtracting it from100 does not produce classification accuracy.

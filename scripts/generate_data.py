@@ -41,7 +41,10 @@ def generate():
         closing=0
         for date in pd.date_range('2024-01-01',AS_OF):
             summer=np.sin(2*np.pi*(date.dayofyear-30)/365.25)
-            season=1+(.45 if cat=='Beverages' else -.25 if pid in ['P07','P08'] else .06)*summer
+            # Synthetic hot-drink scenario peaks in January, not the inverse of
+            # the beverage curve (which incorrectly peaked in October).
+            winter=np.cos(2*np.pi*(date.dayofyear-15)/365.25)
+            season=1+.30*winter if pid in ['P07','P08'] else 1+(.45 if cat=='Beverages' else .06)*summer
             t=(date-pd.Timestamp('2024-01-01')).days
             trend=max(.2,1+(.00055 if pid=='P03' else -.00055 if pid=='P09' else .00008)*t)
             pre_event=any(0<=(d-date).days<=7 for d in event_dates)
@@ -89,7 +92,7 @@ def generate():
     tables={'products':pd.DataFrame(products),'sales':sales,'batches':pd.DataFrame(batches),'purchase_orders':orders,'reviews':reviews,'festivals':events}
     out=ROOT/'data/sample';out.mkdir(parents=True,exist_ok=True)
     for name,frame in tables.items():frame.to_csv(out/f'{name}.csv',index=False)
-    (out/'metadata.json').write_text(json.dumps({'synthetic':True,'seed':42,'as_of':str(AS_OF.date()),'calendar':'Public Google Calendar holiday snapshot; dates as listed, regional differences possible','calendar_imported_on':calendar_metadata['retrieved_on'],'dataset_version':'google-calendar-v2','rows':{k:len(v) for k,v in tables.items()}},indent=2))
+    (out/'metadata.json').write_text(json.dumps({'synthetic':True,'seed':42,'as_of':str(AS_OF.date()),'calendar':'Public Google Calendar holiday snapshot; dates as listed, regional differences possible','calendar_imported_on':calendar_metadata['retrieved_on'],'dataset_version':'winter-calendar-v3','rows':{k:len(v) for k,v in tables.items()}},indent=2))
     return tables
 if __name__=='__main__':
     print({k:len(v) for k,v in generate().items()})

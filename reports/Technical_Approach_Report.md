@@ -42,7 +42,7 @@ Historical summaries retain recorded total units/revenue, recent 28-day observed
 
 ## Selected seasonal model
 
-One Poisson regression per product jointly learns trend, two annual sine/cosine harmonics, weekday indicators and separate festival preparation-window indicators (seven days before through event day). StandardScaler and PoissonRegressor(alpha=.03, max_iter=500) yield nonnegative expected counts through a log link [3]. Smooth annual terms avoid month-boundary steps [4]. Seasonal labels in reporting are broad display groups, not weather forecasts. There is no separate seasonal prediction or universal festival multiplier.
+One Poisson regression per product jointly learns trend, two annual sine/cosine harmonics, weekday indicators and a pooled festival preparation-window indicator (seven days before through event day). StandardScaler and PoissonRegressor(alpha=.03, max_iter=500) yield nonnegative expected counts through a log link [3]. Smooth annual terms avoid month-boundary steps [4]. Seasonal labels in reporting are broad display groups, not weather forecasts. There is no separate seasonal prediction or universal festival multiplier.
 
 Training uses only uncensored observations before the cutoff. At least 180 observed days spanning 365 days are required; otherwise the model explicitly falls back to the 28-day average. No-history products remain unsupported. The model can miss sudden changes, promotions or regional differences; two or three annual cycles do not establish real-world reliability.
 
@@ -68,12 +68,12 @@ Four chronological validation windows select Seasonal Poisson regression by pool
 
 | Method | Validation MAE | Test MAE | Test RMSE | Test WAPE | Test bias |
 |---|---:|---:|---:|---:|---:|
-| Seasonal Poisson regression | 3.088 | 2.884 | 3.958 | 18.673% | -0.052 |
-| HistGradientBoosting | 3.117 | 2.990 | 4.105 | 19.353% | -0.284 |
-| Moving average 28d | 3.439 | 3.389 | 4.750 | 21.938% | -0.047 |
-| Weekly seasonal naive | 4.213 | 4.240 | 5.852 | 27.446% | -0.236 |
+| Seasonal Poisson regression | 3.088 | 2.860 | 3.921 | 18.520% | -0.040 |
+| HistGradientBoosting | 3.178 | 2.964 | 4.066 | 19.193% | -0.313 |
+| Moving average 28d | 3.507 | 3.374 | 4.721 | 21.847% | -0.040 |
+| Weekly seasonal naive | 4.230 | 4.133 | 5.712 | 26.765% | -0.208 |
 
-Test count: 4,201 observed product-days. The selected model reduces MAE by 3.5% versus boosting and 14.9% versus the average on the same revised data. All four broad seasonal groups improve; this does not imply every SKU improves. Separate latent simulation diagnostic: n4,320, MAE2.925. WAPE is not classification accuracy. Old v1 results use different data and a shorter protocol and are archived in evaluation/archive/v1; they are not a direct before/after comparison.
+Test count: 4,200 observed product-days. The selected model reduces MAE by 3.5% versus boosting and 15.2% versus the average on the same revised data. All four broad seasonal groups improve; this does not imply every SKU improves. Separate latent simulation diagnostic: n4,320, MAE2.901. WAPE is not classification accuracy. Old v1/v2 results use different data and/or protocol and are archived in evaluation/archive; they are not a direct before/after comparison.
 
 MAE measures average absolute error; RMSE emphasizes larger errors; bias is prediction minus actual. Shorter uploaded histories use a restricted protocol and cannot establish full-year accuracy. The calendar was imported retrospectively, not from a historical point-in-time feed.
 

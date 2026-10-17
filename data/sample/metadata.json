@@ -4,7 +4,7 @@
   "as_of": "2026-10-16",
   "calendar": "Public Google Calendar holiday snapshot; dates as listed, regional differences possible",
   "calendar_imported_on": "2026-10-17",
-  "dataset_version": "google-calendar-v2",
+  "dataset_version": "winter-calendar-v3",
   "rows": {
     "products": 13,
     "sales": 12240,
